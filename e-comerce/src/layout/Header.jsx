@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Menu, X, User, Search, ShoppingCart } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false); // Menü açma/kapama kontrolü
@@ -115,12 +116,9 @@ const Header = () => {
         {/* Sağdaki simgeler (Kullanıcı, Arama, Sepet) */}
         <div className="flex items-center gap-4">
           <User className="w-5 h-5 cursor-pointer" />
-          <a
-            href="#login"
-            className="text-sm font-medium text-gray-700 hover:text-blue-600"
-          >
+          <Link to="/signup" className="text-blue-600 font-medium hover:underline">
             Login / Register
-          </a>
+          </Link>
           <Search className="w-5 h-5 cursor-pointer" />
           <ShoppingCart className="w-5 h-5 cursor-pointer" />
           {/* Menü açma butonu */}
