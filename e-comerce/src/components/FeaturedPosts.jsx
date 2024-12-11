@@ -6,7 +6,7 @@ import { ChevronRight } from 'lucide-react';
 const FeaturedPosts = () => {
   return (
     <div className="container mx-auto p-6">
-      {/* Başlık ve açıklama */}
+      
       <div className="text-center mb-8">
         <h2 className="text-lg font-medium text-gray-600">Practice Advice</h2>
         <h1 className="text-3xl font-bold text-gray-900">Featured Posts</h1>
@@ -16,9 +16,9 @@ const FeaturedPosts = () => {
         </p>
       </div>
 
-      {/* Post Grid */}
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Post 1 */}
+     
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           <img
             src="https://via.placeholder.com/100"
@@ -63,7 +63,7 @@ const FeaturedPosts = () => {
           </div>
         </div>
 
-        {/* Post 2 */}
+        
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           <img
             src="https://via.placeholder.com/100"
@@ -108,7 +108,7 @@ const FeaturedPosts = () => {
           </div>
         </div>
 
-        {/* Post 3 */}
+        
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           <img
             src="https://via.placeholder.com/100"
