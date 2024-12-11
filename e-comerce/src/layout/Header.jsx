@@ -113,8 +113,14 @@ const Header = () => {
         </nav>
 
         {/* Sağdaki simgeler (Kullanıcı, Arama, Sepet) */}
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
           <User className="w-5 h-5 cursor-pointer" />
+          <a
+            href="#login"
+            className="text-sm font-medium text-gray-700 hover:text-blue-600"
+          >
+            Login / Register
+          </a>
           <Search className="w-5 h-5 cursor-pointer" />
           <ShoppingCart className="w-5 h-5 cursor-pointer" />
           {/* Menü açma butonu */}
