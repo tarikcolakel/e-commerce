@@ -42,7 +42,7 @@ const Header = () => {
 
         {/* Masaüstü Menü */}
         <nav className="hidden md:flex gap-8 text-lg font-medium">
-          <a href="#home" className="hover:text-blue-600">
+          <a href="/" className="hover:text-blue-600">
             Home
           </a>
 
@@ -116,8 +116,11 @@ const Header = () => {
         {/* Sağdaki simgeler (Kullanıcı, Arama, Sepet) */}
         <div className="flex items-center gap-4">
           <User className="w-5 h-5 cursor-pointer" />
+          <Link to="/login" className="text-blue-600 font-medium hover:underline">
+            Login
+          </Link>
           <Link to="/signup" className="text-blue-600 font-medium hover:underline">
-            Login / Register
+           / Register
           </Link>
           <Search className="w-5 h-5 cursor-pointer" />
           <ShoppingCart className="w-5 h-5 cursor-pointer" />
