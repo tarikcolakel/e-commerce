@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, X, User, Search, ShoppingCart } from "lucide-react";
+import { Menu, X, User, Search, ShoppingCart, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Header = () => {
@@ -7,20 +7,20 @@ const Header = () => {
   const [shopOpen, setShopOpen] = useState(false); // Shop menüsünü kontrol et
   const menuRef = useRef(null); // Menü dışındaki tıklamaları kontrol etmek için ref
 
-  const handleShopClick = () => {
-    setShopOpen(!shopOpen); // Shop menüsünü açma/kapama
-  };
-
   const toggleMenu = () => {
     setMenuOpen((prevMenuOpen) => !prevMenuOpen); // Menü açma/kapama
   };
 
+  const handleShopIconClick = () => {
+    setShopOpen((prevShopOpen) => !prevShopOpen); // Shop menüsünü aç/kapat
+  };
+
   // Menü dışında bir yere tıklanıp tıklanmadığını kontrol etmek için useEffect
   useEffect(() => {
-    // Menü dışına tıklanıp tıklanmadığını kontrol et
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuOpen(false); // Menü dışında bir yere tıklanırsa menüyü kapat
+        setShopOpen(false); // Shop menüsünü de kapat
       }
     };
 
@@ -47,17 +47,20 @@ const Header = () => {
           </a>
 
           {/* Shop Menüsü */}
-          <div className="relative ">
-            <button
-              onClick={handleShopClick} // Shop tıklandığında menüyü aç/kapat
-              className="hover:text-blue-600"
-            >
-              Shop
-            </button>
+          <div className="relative flex items-center gap-2">
+            {/* Shop yazısı */}
+            <a  href="/shop"className="hover:text-blue-600">Shop</a>
+
+            {/* ChevronDown ikonu */}
+            <ChevronDown
+              onClick={handleShopIconClick} // Sadece ikon tıklandığında menüyü aç/kapat
+              className="w-4 h-4 cursor-pointer hover:text-blue-600"
+            />
+
             {/* Shop alt menüsü */}
             {shopOpen && (
               <div className="absolute left-0 top-10 bg-white border shadow-lg p-4 w-60 z-20">
-                <div className="flex space-x-12"> {/* Flex ile yan yana hizalama */}
+                <div className="flex space-x-12">
                   {/* Erkek Kategorisi */}
                   <div className="flex flex-col space-y-4">
                     <div className="font-medium">Erkek</div>
@@ -69,9 +72,6 @@ const Header = () => {
                     </a>
                     <a href="#cosmetics" className="text-sm text-gray-600 hover:text-blue-600">
                       Cosmetics
-                    </a>
-                    <a href="#bags" className="text-sm text-gray-600 hover:text-blue-600">
-                      Bags
                     </a>
                     <a href="#hats" className="text-sm text-gray-600 hover:text-blue-600">
                       Hats
@@ -89,9 +89,6 @@ const Header = () => {
                     </a>
                     <a href="#cosmetics" className="text-sm text-gray-600 hover:text-blue-600">
                       Cosmetics
-                    </a>
-                    <a href="#bags" className="text-sm text-gray-600 hover:text-blue-600">
-                      Bags
                     </a>
                     <a href="#hats" className="text-sm text-gray-600 hover:text-blue-600">
                       Hats
@@ -120,7 +117,7 @@ const Header = () => {
             Login
           </Link>
           <Link to="/signup" className="text-blue-600 font-medium hover:underline">
-           / Register
+            / Register
           </Link>
           <Search className="w-5 h-5 cursor-pointer" />
           <ShoppingCart className="w-5 h-5 cursor-pointer" />

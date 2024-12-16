@@ -4,6 +4,7 @@ import Header from "./layout/Header";
 import HomePage from "./pages/HomePage";
 import SignupForm from "./components/SignupForm"; // SignupForm bileşeni ekleniyor
 import Login from "./components/Login";
+import ShopPage from "./pages/ShopPage";
 
 
 const App = () => {
@@ -14,8 +15,9 @@ const App = () => {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/signup" element={<SignupForm />} /> {/* Signup rotası */}
+            <Route path="/signup" element={<SignupForm />} /> 
             <Route path="/login" element={<Login />}/>
+            <Route path="/shop" element={<ShopPage />} />
             
            
           </Routes>

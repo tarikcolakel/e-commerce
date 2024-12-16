@@ -17,11 +17,11 @@ const Login = () => {
       .join('');
   };
 
-  const getGravatarUrl = (email) => {
+  /*const getGravatarUrl = (email) => {
     const emailHash = md5(email.trim().toLowerCase());
     
     return `https://www.gravatar.com/avatar/${emailHash}?d=identicon`;
-  };
+  };*/
 
   const onSubmit = async (data) => {
     try {

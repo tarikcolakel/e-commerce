@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Slider = () => {
   return (
@@ -16,11 +17,13 @@ const Slider = () => {
         <p className="text-sm mt-2 max-w-md md:text-base">
           We know how large objects will act, but things on a small scale.
         </p>
+        <Link to="/shop">
         <button
           className="mt-4 px-6 py-2 bg-green-500 text-white rounded md:px-8 md:py-3"
         >
           Shop Now
         </button>
+        </Link>
       </div>
     </div>
   );
