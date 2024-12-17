@@ -1,47 +1,23 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
+
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
+import { loginUser } from '../redux/actions/clientActions';
 
 const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
 
-  const md5 = (string) => {
-    return string
-      .split('')
-      .map((c) => c.charCodeAt(0).toString(16))
-      .join('');
-  };
-
-  /*const getGravatarUrl = (email) => {
-    const emailHash = md5(email.trim().toLowerCase());
-    
-    return `https://www.gravatar.com/avatar/${emailHash}?d=identicon`;
-  };*/
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector(state => state.client);
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post('https://workintech-fe-ecommerce.onrender.com/login', {
-        email: data.email,
-        password: data.password,
-      });
-
-      if (response.data.token) {
-        localStorage.setItem('authToken', response.data.token);
-        localStorage.setItem('userInfo', JSON.stringify(response.data.user));
-
-        if (rememberMe) {
-          localStorage.setItem('rememberMe', true);
-        } else {
-          localStorage.removeItem('rememberMe');
-        }
-
-        navigate(-1);
-      }
+      await dispatch(loginUser(data, rememberMe, navigate));
     } catch (error) {
       if (error.response && error.response.data) {
         // Hata mesajını özelleştirmek ve simgeyi küçültmek
@@ -63,25 +39,7 @@ const Login = () => {
             </svg>
           ),
         });
-      } else {
-        toast.error('Login failed! Please try again.', {
-          icon: (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-5 h-5 text-red-500"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.054 0 1.502-1.288.732-1.965l-6.928-6.197a1 1 0 00-1.366 0L5.206 17.035c-.77.677-.322 1.965.732 1.965z"
-              />
-            </svg>
-          ),
-        });
+     
       }
     }
   };
