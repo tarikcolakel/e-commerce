@@ -5,10 +5,14 @@ import HomePage from "./pages/HomePage";
 import SignupForm from "./components/SignupForm"; // SignupForm bileşeni ekleniyor
 import Login from "./components/Login";
 import ShopPage from "./pages/ShopPage";
+import { Provider } from "react-redux";
+import store from "./redux/store";
+
 
 
 const App = () => {
   return (
+    <Provider store={store}>
     <Router>
       <div className="flex flex-col min-h-screen">
         <Header />
@@ -25,6 +29,7 @@ const App = () => {
         </main>
       </div>
     </Router>
+    </Provider>
   );
 };
 
