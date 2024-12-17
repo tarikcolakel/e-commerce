@@ -12,7 +12,7 @@ import store from "./redux/store";
 
 const App = () => {
   return (
-    <Provider store={store}>
+    
     <Router>
       <div className="flex flex-col min-h-screen">
         <Header />
@@ -29,7 +29,7 @@ const App = () => {
         </main>
       </div>
     </Router>
-    </Provider>
+   
   );
 };
 
