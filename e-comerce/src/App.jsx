@@ -5,8 +5,8 @@ import HomePage from "./pages/HomePage";
 import SignupForm from "./components/SignupForm"; // SignupForm bileşeni ekleniyor
 import Login from "./components/Login";
 import ShopPage from "./pages/ShopPage";
-import { Provider } from "react-redux";
-import store from "./redux/store";
+import ProductPage from "./pages/ProductPage";
+
 
 
 
@@ -22,7 +22,7 @@ const App = () => {
             <Route path="/signup" element={<SignupForm />} /> 
             <Route path="/login" element={<Login />}/>
             <Route path="/shop" element={<ShopPage />} />
-            
+            <Route path="/product" element={<ProductPage />} />
            
           </Routes>
           
