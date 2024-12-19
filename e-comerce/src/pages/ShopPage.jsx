@@ -2,7 +2,7 @@ import React from "react";
 import HeaderShop from "../components/HeaderShop";
 import ShopCard from "../components/ShopCard";
 import ShopFilter from "../components/ShopFilter";
-import ProductCategoryList from "../components/ProductCategoryList";
+import PaginatedProductList from "../components/PaginatedProductList";
 import ShopClients from "../components/ShopClients";
 import Footer from "../layout/Footer";
 
@@ -14,7 +14,7 @@ const ShopPage = () => {
         <HeaderShop />
         <ShopCard />
         <ShopFilter />
-        <ProductCategoryList />
+        <PaginatedProductList />
         <ShopClients />
 
         <Footer />
