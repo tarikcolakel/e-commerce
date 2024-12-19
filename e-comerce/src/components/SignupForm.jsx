@@ -2,12 +2,18 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchRolesIfNeeded } from "../redux/actions/thunkActions";
+
+
 
 const SignupForm = () => {
-  const [roles, setRoles] = useState([]);
+  const dispatch = useDispatch();
+  const roles = useSelector((state) => state.client.roles);
   const [selectedRole, setSelectedRole] = useState("customer");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  
 
   const {
     register,
@@ -25,15 +31,8 @@ const SignupForm = () => {
 
   // Fetch roles
   useEffect(() => {
-    api
-      .get("/roles")
-      .then((response) => {
-        setRoles(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching roles:", error);
-      });
-  }, []);
+    dispatch(fetchRolesIfNeeded());
+  }, [dispatch]);
 
   const onSubmit = (data) => {
     setIsSubmitting(true);
@@ -89,7 +88,7 @@ const SignupForm = () => {
       <div>
         <label className="block text-sm font-medium mb-2">Name</label>
         <input
-          {...register("name", { required: true, minLength: 3 })}
+          {...register("name", {required: true, minLength: 3 })}
           className="border px-3 py-2 w-full"
         />
         {errors.name && <span className="text-red-500">Name is required (min 3 chars).</span>}
@@ -132,7 +131,7 @@ const SignupForm = () => {
         <label className="block text-sm font-medium mb-2">Confirm Password</label>
         <input
           type="password"
-          {... register("confirm_password", {
+          {...register("confirm_password", {
             required: true,
             validate: (value) => value === password,
           })}
