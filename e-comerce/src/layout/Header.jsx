@@ -1,11 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Menu, X, User, Search, ShoppingCart, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchCategories } from '../redux/reducers/categoryReducer';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false); // Menü açma/kapama kontrolü
   const [shopOpen, setShopOpen] = useState(false); // Shop menüsünü kontrol et
   const menuRef = useRef(null); // Menü dışındaki tıklamaları kontrol etmek için ref
+
+  const dispatch = useDispatch();
+  const { categories, status } = useSelector((state) => state.categories);
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchCategories());
+    }
+  }, [status, dispatch]);
+
+  // Group categories by gender
+  const categoriesByGender = categories.reduce((acc, category) => {
+    if (!acc[category.gender]) {
+      acc[category.gender] = [];
+    }
+    acc[category.gender].push(category);
+    return acc;
+  }, {});
 
   const toggleMenu = () => {
     setMenuOpen((prevMenuOpen) => !prevMenuOpen); // Menü açma/kapama
@@ -49,7 +69,7 @@ const Header = () => {
           {/* Shop Menüsü */}
           <div className="relative flex items-center gap-2">
             {/* Shop yazısı */}
-            <a  href="/shop"className="hover:text-blue-600">Shop</a>
+            <a href="/shop" className="hover:text-blue-600">Shop</a>
 
             {/* ChevronDown ikonu */}
             <ChevronDown
@@ -59,40 +79,30 @@ const Header = () => {
 
             {/* Shop alt menüsü */}
             {shopOpen && (
-              <div className="absolute left-0 top-10 bg-white border shadow-lg p-4 w-60 z-20">
-                <div className="flex space-x-12">
-                  {/* Erkek Kategorisi */}
-                  <div className="flex flex-col space-y-4">
-                    <div className="font-medium">Erkek</div>
-                    <a href="#bags" className="text-sm text-gray-600 hover:text-blue-600">
-                      Bags
-                    </a>
-                    <a href="#belts" className="text-sm text-gray-600 hover:text-blue-600">
-                      Belts
-                    </a>
-                    <a href="#cosmetics" className="text-sm text-gray-600 hover:text-blue-600">
-                      Cosmetics
-                    </a>
-                    <a href="#hats" className="text-sm text-gray-600 hover:text-blue-600">
-                      Hats
-                    </a>
+              <div className="absolute left-0 top-full mt-2 bg-white border shadow-lg p-6 w-96 z-20">
+                <div className="grid grid-cols-2 gap-x-12">
+                  {/* Kadın Kategorisi */}
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-lg">Kadın</h3>
+                    <div className="flex flex-col space-y-3">
+                      <Link to="/shop/kadin/bags" className="text-gray-600 hover:text-blue-600">Bags</Link>
+                      <Link to="/shop/kadin/belts" className="text-gray-600 hover:text-blue-600">Belts</Link>
+                      <Link to="/shop/kadin/cosmetics" className="text-gray-600 hover:text-blue-600">Cosmetics</Link>
+                      <Link to="/shop/kadin/bags" className="text-gray-600 hover:text-blue-600">Bags</Link>
+                      <Link to="/shop/k/hats" className="text-gray-600 hover:text-blue-600">Hats</Link>
+                    </div>
                   </div>
 
-                  {/* Kadın Kategorisi */}
-                  <div className="flex flex-col space-y-4">
-                    <div className="font-medium">Kadın</div>
-                    <a href="#bags" className="text-sm text-gray-600 hover:text-blue-600">
-                      Bags
-                    </a>
-                    <a href="#belts" className="text-sm text-gray-600 hover:text-blue-600">
-                      Belts
-                    </a>
-                    <a href="#cosmetics" className="text-sm text-gray-600 hover:text-blue-600">
-                      Cosmetics
-                    </a>
-                    <a href="#hats" className="text-sm text-gray-600 hover:text-blue-600">
-                      Hats
-                    </a>
+                  {/* Erkek Kategorisi */}
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-lg">Erkek</h3>
+                    <div className="flex flex-col space-y-3">
+                      <Link to="/shop/erkek/bags" className="text-gray-600 hover:text-blue-600">Bags</Link>
+                      <Link to="/shop/erkek/belts" className="text-gray-600 hover:text-blue-600">Belts</Link>
+                      <Link to="/shop/erkek/cosmetics" className="text-gray-600 hover:text-blue-600">Cosmetics</Link>
+                      <Link to="/shop/erkek/bags" className="text-gray-600 hover:text-blue-600">Bags</Link>
+                      <Link to="/shop/e/hats" className="text-gray-600 hover:text-blue-600">Hats</Link>
+                    </div>
                   </div>
                 </div>
               </div>
