@@ -3,6 +3,7 @@ import HeaderProduct from "../components/HeaderProduct";
 import Footer from "../layout/Footer";
 import ShopClients from "../components/ShopClients";
 import ProductCard from "../components/ProductCard";
+import ProductDescription from "../components/ProductDescription";
 
 
 const ProductPage = () => {
@@ -11,6 +12,7 @@ const ProductPage = () => {
         <div >
             <HeaderProduct />
             <ProductCard />
+            <ProductDescription />
             <ShopClients />
             <Footer />
 
