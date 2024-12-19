@@ -108,6 +108,9 @@ const Header = () => {
           <a href="#contact" className="hover:text-blue-600">
             Contact
           </a>
+          <a href="/product" className="hover:text-blue-600">
+            Product
+          </a>
         </nav>
 
         {/* Sağdaki simgeler (Kullanıcı, Arama, Sepet) */}
@@ -141,10 +144,10 @@ const Header = () => {
           ref={menuRef} // Menü dışı tıklamaları kontrol etmek için ref
           className="absolute top-0 left-0 w-full bg-white flex flex-col items-center gap-4 py-6 shadow-md md:hidden z-50"
         >
-          <a href="#home" className="text-lg font-medium hover:text-blue-600">
+          <a href="/" className="text-lg font-medium hover:text-blue-600">
             Home
           </a>
-          <a href="#product" className="text-lg font-medium hover:text-blue-600">
+          <a href="/product" className="text-lg font-medium hover:text-blue-600">
             Product
           </a>
           <a href="#pricing" className="text-lg font-medium hover:text-blue-600">
