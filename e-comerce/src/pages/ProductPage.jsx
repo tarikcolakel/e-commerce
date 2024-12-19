@@ -4,6 +4,7 @@ import Footer from "../layout/Footer";
 import ShopClients from "../components/ShopClients";
 import ProductCard from "../components/ProductCard";
 import ProductDescription from "../components/ProductDescription";
+import BestsellerProduct from "../components/BestsellerProduct";
 
 
 const ProductPage = () => {
@@ -13,6 +14,7 @@ const ProductPage = () => {
             <HeaderProduct />
             <ProductCard />
             <ProductDescription />
+            <BestsellerProduct />
             <ShopClients />
             <Footer />
 
