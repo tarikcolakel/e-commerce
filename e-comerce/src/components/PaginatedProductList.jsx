@@ -1,17 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../redux/actions/productActions";
 
-const PaginatedProductList = () => {
-  const allProducts = Array.from({ length: 36 }, (_, i) => ({
-    title: `Product ${i + 1}`,
-    department: `Department ${i + 1}`,
-    oldPrice: `$${(Math.random() * 20 + 10).toFixed(2)}`,
-    newPrice: `$${(Math.random() * 10 + 5).toFixed(2)}`,
-  }));
-
-  const [currentPage, setCurrentPage] = useState(1);
+const PaginatedProductList = ({ gender, category }) => {
+  const dispatch = useDispatch();
+  const { productList, total, fetchState } = useSelector((state) => state.product);
   const itemsPerPage = 12;
+  const [currentPage, setCurrentPage] = React.useState(1);
 
-  const totalPages = Math.ceil(allProducts.length / itemsPerPage);
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  if (fetchState === "FETCHING") {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (fetchState === "FAILED") {
+    return (
+      <div className="text-center text-red-500 p-4">
+        An error occurred while loading products. Please try again later.
+      </div>
+    );
+  }
+
+  // Ürünleri filtrele
+  const filteredProducts = productList.filter(product => {
+    if (!gender && !category) return true; // Ana shop sayfasında tüm ürünleri göster
+    
+    const productGender = product.gender === 'k' ? 'kadin' : 'erkek';
+    const matchesGender = !gender || productGender === gender.toLowerCase();
+    const matchesCategory = !category || product.category?.name.toLowerCase() === category.toLowerCase();
+    
+    return matchesGender && matchesCategory;
+  });
+
+  const totalFilteredProducts = filteredProducts.length;
+  const totalPages = Math.ceil(totalFilteredProducts / itemsPerPage);
+  const currentProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -19,44 +52,47 @@ const PaginatedProductList = () => {
     }
   };
 
-  const currentProducts = allProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Kategori başlığını oluştur
+  let title = "All Products";
+  if (gender && category) {
+    const genderText = gender.toLowerCase() === 'kadin' ? "Women's" : "Men's";
+    title = `${genderText} ${category.charAt(0).toUpperCase() + category.slice(1)}`;
+  }
 
   return (
     <div className="p-4">
-      <h2 className="text-center text-xl font-bold mb-2">Our Products</h2>
-      <h3 className="text-center text-2xl font-bold mb-4">Paginated Products</h3>
+      <h2 className="text-center text-xl font-bold mb-2">{title}</h2>
       <p className="text-center text-gray-600 mb-6">
         Browse through our exclusive collection.
       </p>
 
-      {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {currentProducts.map((product, index) => (
+        {currentProducts.map((product) => (
           <div
-            key={index}
+            key={product.id}
             className="flex flex-col items-center bg-white shadow-md p-4 rounded-lg"
           >
             <img
-              src={`https://via.placeholder.com/150?text=Product+${(currentPage - 1) * itemsPerPage + index + 1}`}
+              src={product.images?.[0] || "https://via.placeholder.com/150"}
               alt={product.title}
               className="w-48 h-60 object-cover mb-4 rounded-md"
             />
             <div className="text-center">
               <h4 className="font-bold text-lg mb-1">{product.title}</h4>
-              <p className="text-gray-500 mb-2">{product.department}</p>
+              <p className="text-gray-500 mb-2">{product.category?.name}</p>
               <div className="flex justify-center items-center gap-2">
-                <span className="text-gray-400 line-through">{product.oldPrice}</span>
-                <span className="text-green-600 font-bold">{product.newPrice}</span>
+                {product.originalPrice && (
+                  <span className="text-gray-400 line-through">
+                    ${product.originalPrice}
+                  </span>
+                )}
+                <span className="text-blue-600 font-bold">${product.price}</span>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Pagination */}
       <div className="flex justify-center items-center gap-4 mt-6">
         <button
           onClick={() => handlePageChange(1)}
@@ -83,8 +119,14 @@ const PaginatedProductList = () => {
           disabled={currentPage === totalPages}
           className="px-3 py-1 bg-blue-500 text-white rounded disabled:opacity-50"
         >
-          Next
+          Last
         </button>
+      </div>
+
+      <div className="mt-8 text-center">
+        <p className="text-gray-600">
+          Showing {currentProducts.length} of {totalFilteredProducts} products
+        </p>
       </div>
     </div>
   );
