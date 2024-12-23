@@ -1,16 +1,29 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../redux/actions/productActions";
 
-const PaginatedProductList = ({ gender, category }) => {
+const PaginatedProductList = () => {
   const dispatch = useDispatch();
   const { productList, total, fetchState } = useSelector((state) => state.product);
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
-  const [currentPage, setCurrentPage] = React.useState(1);
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
+
+  // Sayfalama için ürünleri böl
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProducts = productList.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Toplam sayfa sayısını hesapla
+  const totalPages = Math.ceil(productList.length / itemsPerPage);
+
+  // Sayfa değiştirme fonksiyonu
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   if (fetchState === "FETCHING") {
     return (
@@ -31,44 +44,9 @@ const PaginatedProductList = ({ gender, category }) => {
     );
   }
 
-  // Ürünleri filtrele
-  const filteredProducts = productList.filter(product => {
-    if (!gender && !category) return true; // Ana shop sayfasında tüm ürünleri göster
-    
-    const productGender = product.gender === 'k' ? 'kadin' : 'erkek';
-    const matchesGender = !gender || productGender === gender.toLowerCase();
-    const matchesCategory = !category || product.category?.name.toLowerCase() === category.toLowerCase();
-    
-    return matchesGender && matchesCategory;
-  });
-
-  const totalFilteredProducts = filteredProducts.length;
-  const totalPages = Math.ceil(totalFilteredProducts / itemsPerPage);
-  const currentProducts = filteredProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
-
-  // Kategori başlığını oluştur
-  let title = "All Products";
-  if (gender && category) {
-    const genderText = gender.toLowerCase() === 'kadin' ? "Women's" : "Men's";
-    title = `${genderText} ${category.charAt(0).toUpperCase() + category.slice(1)}`;
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h2 className="text-center text-xl font-bold mb-2">{title}</h2>
-      <p className="text-center text-gray-600 mb-6">
-        Browse through our exclusive collection.
-      </p>
-
+    <div>
+      {/* Ürün Listesi */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {currentProducts.map((product) => (
           <div 
@@ -106,40 +84,31 @@ const PaginatedProductList = ({ gender, category }) => {
         ))}
       </div>
 
-      <div className="flex justify-center items-center gap-4 mt-6">
-        <button
-          onClick={() => handlePageChange(1)}
-          disabled={currentPage === 1}
-          className="px-3 py-1 bg-blue-500 text-white rounded disabled:opacity-50"
-        >
-          First
-        </button>
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i}
-            onClick={() => handlePageChange(i + 1)}
-            className={`px-3 py-1 rounded ${
-              currentPage === i + 1
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
-        <button
-          onClick={() => handlePageChange(totalPages)}
-          disabled={currentPage === totalPages}
-          className="px-3 py-1 bg-blue-500 text-white rounded disabled:opacity-50"
-        >
-          Last
-        </button>
+      {/* Sayfalama */}
+      <div className="flex justify-center mt-8">
+        <nav>
+          <ul className="flex space-x-2">
+            {[...Array(totalPages)].map((_, index) => (
+              <li key={index}>
+                <button
+                  onClick={() => handlePageChange(index + 1)}
+                  className={`px-4 py-2 rounded-md ${
+                    currentPage === index + 1 
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
 
-      <div className="mt-8 text-center">
-        <p className="text-gray-600">
-          Showing {currentProducts.length} of {totalFilteredProducts} products
-        </p>
+      {/* Toplam ürün sayısı bilgisi */}
+      <div className="text-center mt-6 text-gray-600">
+        Toplam {total} ürün içinden {currentProducts.length} ürün gösteriliyor
       </div>
     </div>
   );

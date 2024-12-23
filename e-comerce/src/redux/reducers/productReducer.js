@@ -3,7 +3,9 @@ const initialState = {
     total: 0,
     limit: 25,
     offset: 0,
+    category: null,
     filter: "",
+    sort: "",
     fetchState: "NOT_FETCHED",
   };
   
@@ -15,12 +17,14 @@ const initialState = {
         return { ...state, total: action.payload };
       case "SET_FETCH_STATE":
         return { ...state, fetchState: action.payload };
-      case "SET_LIMIT":
-        return { ...state, limit: action.payload };
-      case "SET_OFFSET":
-        return { ...state, offset: action.payload };
+      case "SET_CATEGORY":
+        return { ...state, category: action.payload };
       case "SET_FILTER":
         return { ...state, filter: action.payload };
+      case "SET_SORT":
+        return { ...state, sort: action.payload };
+      case "RESET_PRODUCTS":
+        return { ...initialState };
       default:
         return state;
     }

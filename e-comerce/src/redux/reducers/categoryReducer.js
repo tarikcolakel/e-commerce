@@ -1,77 +1,48 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Action Types
-export const FETCH_CATEGORIES_START = 'FETCH_CATEGORIES_START';
-export const FETCH_CATEGORIES_SUCCESS = 'FETCH_CATEGORIES_SUCCESS';
-export const FETCH_CATEGORIES_ERROR = 'FETCH_CATEGORIES_ERROR';
-
-// Initial State
-const initialState = {
-  categories: [],
-  status: 'idle',
-  error: null
-};
-
-// Action Creators
-export const fetchCategoriesStart = () => ({
-  type: FETCH_CATEGORIES_START
-});
-
-export const fetchCategoriesSuccess = (categories) => ({
-  type: FETCH_CATEGORIES_SUCCESS,
-  payload: categories
-});
-
-export const fetchCategoriesError = (error) => ({
-  type: FETCH_CATEGORIES_ERROR,
-  payload: error
-});
-
-// Thunk Action
-export const fetchCategories = () => {
-  return async (dispatch) => {
-    dispatch(fetchCategoriesStart());
-    try {
-      const response = await axios.get('https://workintech-fe-ecommerce.onrender.com/categories');
-      // Validate and clean the data
-      const validCategories = response.data
-        .filter(category => category && category.title && category.gender)
-        .map(category => ({
-          ...category,
-          title: category.title.trim(),
-          gender: category.gender === 'k' ? 'kadin' : 'erkek',
-          rating: Number(category.rating) || 0
-        }));
-      dispatch(fetchCategoriesSuccess(validCategories));
-    } catch (error) {
-      dispatch(fetchCategoriesError(error.message));
-    }
-  };
-};
-
-// Reducer
-const categoryReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case FETCH_CATEGORIES_START:
-      return {
-        ...state,
-        status: 'loading'
-      };
-    case FETCH_CATEGORIES_SUCCESS:
-      return {
-        ...state,
-        status: 'succeeded',
-        categories: action.payload
-      };
-    case FETCH_CATEGORIES_ERROR:
-      return {
-        ...state,
-        status: 'failed',
-        error: action.payload
-      };
-    default:
-      return state;
+// Kategorileri çekmek için async thunk
+export const fetchCategories = createAsyncThunk(
+  'categories/fetchCategories',
+  async () => {
+    const response = await axios.get('https://workintech-fe-ecommerce.onrender.com/categories');
+    // Validate and clean the data
+    const validCategories = response.data
+      .filter(category => category && category.title && category.gender)
+      .map(category => ({
+        ...category,
+        title: category.title.trim(),
+        gender: category.gender.toLowerCase() === 'k' ? 'kadin' : 
+                category.gender.toLowerCase() === 'e' ? 'erkek' : 
+                category.gender.toLowerCase(),
+        rating: Number(category.rating) || 0
+      }));
+    return validCategories;
   }
-};
+);
 
-export default categoryReducer;
+const categorySlice = createSlice({
+  name: 'categories',
+  initialState: {
+    categories: [],
+    status: 'idle',
+    error: null
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCategories.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.categories = action.payload;
+      })
+      .addCase(fetchCategories.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      });
+  }
+});
+
+export default categorySlice.reducer;
