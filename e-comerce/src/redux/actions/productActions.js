@@ -15,12 +15,14 @@ export const fetchProducts = () => {
       
       const response = await axios.get("https://workintech-fe-ecommerce.onrender.com/products");
       
-      dispatch(setTotal(response.data.total));
-      dispatch(setProductList(response.data.products));
+      dispatch(setTotal(response.data.total || 0));
+      dispatch(setProductList(response.data.products || []));
       dispatch(setFetchState("FETCHED")); // Yükleme tamamlandı
     } catch (error) {
       console.error("Ürünler yüklenirken hata oluştu:", error);
       dispatch(setFetchState("FAILED")); // Hata durumu
+      dispatch(setTotal(0));
+      dispatch(setProductList([]));
     }
   };
 };

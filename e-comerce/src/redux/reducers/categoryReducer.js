@@ -35,11 +35,11 @@ export const fetchCategories = () => {
       const response = await axios.get('https://workintech-fe-ecommerce.onrender.com/categories');
       // Validate and clean the data
       const validCategories = response.data
-        .filter(category => category && category.name && category.gender)
+        .filter(category => category && category.title && category.gender)
         .map(category => ({
           ...category,
-          name: category.name.trim(),
-          gender: category.gender.trim(),
+          title: category.title.trim(),
+          gender: category.gender === 'k' ? 'kadin' : 'erkek',
           rating: Number(category.rating) || 0
         }));
       dispatch(fetchCategoriesSuccess(validCategories));

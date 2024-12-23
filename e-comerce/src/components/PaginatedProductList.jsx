@@ -14,8 +14,11 @@ const PaginatedProductList = ({ gender, category }) => {
 
   if (fetchState === "FETCHING") {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex justify-center items-center min-h-[400px] w-full">
+        <div className="flex flex-col items-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
+          <p className="text-gray-600">Ürünler yükleniyor...</p>
+        </div>
       </div>
     );
   }
@@ -23,7 +26,7 @@ const PaginatedProductList = ({ gender, category }) => {
   if (fetchState === "FAILED") {
     return (
       <div className="text-center text-red-500 p-4">
-        An error occurred while loading products. Please try again later.
+        Ürünler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.
       </div>
     );
   }
@@ -60,33 +63,43 @@ const PaginatedProductList = ({ gender, category }) => {
   }
 
   return (
-    <div className="p-4">
+    <div className="container mx-auto px-4 py-8">
       <h2 className="text-center text-xl font-bold mb-2">{title}</h2>
       <p className="text-center text-gray-600 mb-6">
         Browse through our exclusive collection.
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {currentProducts.map((product) => (
-          <div
-            key={product.id}
-            className="flex flex-col items-center bg-white shadow-md p-4 rounded-lg"
+          <div 
+            key={product.id} 
+            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
           >
-            <img
-              src={product.images?.[0] || "https://via.placeholder.com/150"}
-              alt={product.title}
-              className="w-48 h-60 object-cover mb-4 rounded-md"
-            />
-            <div className="text-center">
-              <h4 className="font-bold text-lg mb-1">{product.title}</h4>
-              <p className="text-gray-500 mb-2">{product.category?.name}</p>
-              <div className="flex justify-center items-center gap-2">
-                {product.originalPrice && (
-                  <span className="text-gray-400 line-through">
-                    ${product.originalPrice}
-                  </span>
-                )}
-                <span className="text-blue-600 font-bold">${product.price}</span>
+            <div className="relative">
+              <img 
+                src={product.images[0]?.url || 'https://via.placeholder.com/300'} 
+                alt={product.name} 
+                className="w-full h-48 object-cover"
+              />
+              {product.stock <= 10 && (
+                <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                  Az Stok
+                </span>
+              )}
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-semibold mb-2 truncate">{product.name}</h3>
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-bold text-blue-600">
+                  {product.price.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                </span>
+                <div className="flex items-center">
+                  <span className="text-yellow-500 mr-1">★</span>
+                  <span className="text-sm">{product.rating.toFixed(1)}</span>
+                </div>
+              </div>
+              <div className="mt-2 text-xs text-gray-500">
+                Satılan: {product.sell_count}
               </div>
             </div>
           </div>

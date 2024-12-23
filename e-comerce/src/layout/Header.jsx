@@ -80,18 +80,17 @@ const Header = () => {
                   <div className="space-y-4">
                     <h3 className="font-medium text-lg">Kadın</h3>
                     <div className="flex flex-col space-y-3">
-                      <Link to="/shop/kadin/bags" className="text-gray-600 hover:text-blue-600">
-                        Çanta
-                      </Link>
-                      <Link to="/shop/kadin/shoes" className="text-gray-600 hover:text-blue-600">
-                        Ayakkabı
-                      </Link>
-                      <Link to="/shop/kadin/dresses" className="text-gray-600 hover:text-blue-600">
-                        Elbise
-                      </Link>
-                      <Link to="/shop/kadin/accessories" className="text-gray-600 hover:text-blue-600">
-                        Aksesuar
-                      </Link>
+                      {categories
+                        .filter(cat => cat.gender === 'kadin')
+                        .map(category => (
+                          <Link
+                            key={category.id}
+                            to={`/shop/kadin/${category.title}/${category.id}`}
+                            className="text-gray-600 hover:text-blue-600 transition-colors duration-200"
+                          >
+                            {category.title}
+                          </Link>
+                        ))}
                     </div>
                   </div>
 
@@ -99,18 +98,17 @@ const Header = () => {
                   <div className="space-y-4">
                     <h3 className="font-medium text-lg">Erkek</h3>
                     <div className="flex flex-col space-y-3">
-                      <Link to="/shop/erkek/bags" className="text-gray-600 hover:text-blue-600">
-                        Çanta
-                      </Link>
-                      <Link to="/shop/erkek/shoes" className="text-gray-600 hover:text-blue-600">
-                        Ayakkabı
-                      </Link>
-                      <Link to="/shop/erkek/suits" className="text-gray-600 hover:text-blue-600">
-                        Takım Elbise
-                      </Link>
-                      <Link to="/shop/erkek/accessories" className="text-gray-600 hover:text-blue-600">
-                        Aksesuar
-                      </Link>
+                      {categories
+                        .filter(cat => cat.gender === 'erkek')
+                        .map(category => (
+                          <Link
+                            key={category.id}
+                            to={`/shop/erkek/${category.title}/${category.id}`}
+                            className="text-gray-600 hover:text-blue-600 transition-colors duration-200"
+                          >
+                            {category.title}
+                          </Link>
+                        ))}
                     </div>
                   </div>
                 </div>
