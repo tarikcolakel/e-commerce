@@ -11,6 +11,8 @@ import HeaderShop from "../components/HeaderShop";
 import ShopFilter from "../components/ShopFilter";
 import ShopCard from "../components/ShopCard";
 import PaginatedProductList from "../components/PaginatedProductList";
+import ShopCategory from '../components/ShopCategory';
+
 import ShopClients from "../components/ShopClients";
 import Footer from "../layout/Footer";
 
@@ -57,6 +59,7 @@ const ShopPage = () => {
   return (
     <div>
       <HeaderShop />
+      <ShopCategory/>
       <ShopFilter />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">

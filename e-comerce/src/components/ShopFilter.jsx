@@ -81,7 +81,7 @@ const ShopFilter = () => {
               </button>
               
               {/* Gender'a göre kategoriler */}
-              {currentGenderCategories.map((category) => (
+              {categories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => handleCategorySelect(category)}
