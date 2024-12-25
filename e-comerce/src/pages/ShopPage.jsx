@@ -26,7 +26,7 @@ const ShopPage = () => {
     if (categoryId) {
       dispatch(setCategory(categoryId));
       dispatch(fetchProducts());
-    } else if (gender) {
+    } else  {
       // Gender'a göre genel filtreleme
       dispatch(setCategory(null));
       dispatch(fetchProducts());
