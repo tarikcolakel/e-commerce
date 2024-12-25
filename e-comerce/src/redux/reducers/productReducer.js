@@ -1,8 +1,8 @@
 const initialState = {
     productList: [],
     total: 0,
-    limit: 25,
-    offset: 0,
+    limit: 24,  // Varsayılan sayfa başı ürün sayısı
+    offset: 0,  // Varsayılan başlangıç offseti
     category: null,
     filter: "",
     sort: "",
@@ -23,6 +23,10 @@ const initialState = {
         return { ...state, filter: action.payload };
       case "SET_SORT":
         return { ...state, sort: action.payload };
+      case "SET_LIMIT":
+        return { ...state, limit: action.payload };
+      case "SET_OFFSET":
+        return { ...state, offset: action.payload };
       case "RESET_PRODUCTS":
         return { ...initialState };
       default:

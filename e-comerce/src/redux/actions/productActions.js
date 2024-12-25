@@ -36,15 +36,10 @@ export const fetchProducts = () => {
       }
 
       // Limit ve offset parametreleri
-      if (limit) {
-        queryParams.append('limit', limit);
-      }
+      queryParams.append('limit', limit || 24);
+      queryParams.append('offset', offset || 0);
       
-      if (offset !== undefined && offset !== null) {
-        queryParams.append('offset', offset);
-      }
-      
-      const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+      const queryString = `?${queryParams.toString()}`;
       
       const response = await axios.get(`https://workintech-fe-ecommerce.onrender.com/products${queryString}`);
       
