@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { 
   fetchProducts, 
@@ -18,7 +18,9 @@ import Footer from "../layout/Footer";
 
 const ShopPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { gender, categoryName, categoryId } = useParams();
+  const { category, filter, sort } = useSelector(state => state.product);
 
   // Sayfa yüklendiğinde veya kategori değiştiğinde ürünleri fetch et
   useEffect(() => {
@@ -26,20 +28,25 @@ const ShopPage = () => {
     if (categoryId) {
       dispatch(setCategory(categoryId));
       dispatch(fetchProducts());
+      
+      // Update URL to include category details
+      navigate(`/shop/${gender}/${categoryName}/${categoryId}`);
     } else  {
       // Gender'a göre genel filtreleme
       dispatch(setCategory(null));
       dispatch(fetchProducts());
     }
-  }, [gender, categoryId, dispatch]);
+  }, [gender, categoryId, dispatch, navigate]);
 
   const handleFilterChange = (e) => {
-    dispatch(setFilter(e.target.value));
+    const filterText = e.target.value;
+    dispatch(setFilter(filterText));
     dispatch(fetchProducts());
   };
 
   const handleSortChange = (e) => {
-    dispatch(setSort(e.target.value));
+    const sortValue = e.target.value;
+    dispatch(setSort(sortValue));
     dispatch(fetchProducts());
   };
 
@@ -68,10 +75,12 @@ const ShopPage = () => {
             <input 
               type="text" 
               placeholder="Ürün ara..." 
+              value={filter}
               onChange={handleFilterChange}
               className="border px-3 py-2 rounded-md w-64"
             />
             <select 
+              value={sort}
               onChange={handleSortChange}
               className="border px-3 py-2 rounded-md"
             >

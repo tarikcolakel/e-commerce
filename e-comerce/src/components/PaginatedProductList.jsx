@@ -1,28 +1,122 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProducts } from "../redux/actions/productActions";
+import { 
+  fetchProducts, 
+  setLimit, 
+  setOffset 
+} from "../redux/actions/productActions";
 
 const PaginatedProductList = () => {
   const dispatch = useDispatch();
   const { productList, total, fetchState } = useSelector((state) => state.product);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const itemsPerPage = 24; // Sayfa başına ürün sayısı
 
   useEffect(() => {
+    // Sayfa değiştiğinde offset'i güncelle
+    const newOffset = (currentPage - 1) * itemsPerPage;
+    dispatch(setLimit(itemsPerPage));
+    dispatch(setOffset(newOffset));
     dispatch(fetchProducts());
-  }, [dispatch]);
-
-  // Sayfalama için ürünleri böl
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentProducts = productList.slice(indexOfFirstItem, indexOfLastItem);
+  }, [currentPage, dispatch]);
 
   // Toplam sayfa sayısını hesapla
-  const totalPages = Math.ceil(productList.length / itemsPerPage);
+  const totalPages = Math.ceil(total / itemsPerPage);
 
   // Sayfa değiştirme fonksiyonu
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  // Sayfa numarası butonları için fonksiyon
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5; // Aynı anda gösterilecek maksimum sayfa numarası
+    
+    // Başlangıç ve bitiş sayfalarını hesapla
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+    // Başlangıç sayfasını tekrar ayarla
+    if (endPage - startPage + 1 < maxPagesToShow) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+
+    // İlk sayfaya atlama butonu
+    if (startPage > 1) {
+      pageNumbers.push(
+        <li key="first">
+          <button 
+            onClick={() => handlePageChange(1)} 
+            className="px-3 py-1 rounded-md bg-gray-200 text-gray-700"
+          >
+            İlk
+          </button>
+        </li>
+      );
+    }
+
+    // Önceki sayfa butonu
+    if (currentPage > 1) {
+      pageNumbers.push(
+        <li key="prev">
+          <button 
+            onClick={() => handlePageChange(currentPage - 1)} 
+            className="px-3 py-1 rounded-md bg-gray-200 text-gray-700"
+          >
+            &lt;
+          </button>
+        </li>
+      );
+    }
+
+    // Sayfa numaraları
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <li key={i}>
+          <button
+            onClick={() => handlePageChange(i)}
+            className={`px-4 py-2 rounded-md ${
+              currentPage === i 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-200 text-gray-700'
+            }`}
+          >
+            {i}
+          </button>
+        </li>
+      );
+    }
+
+    // Sonraki sayfa butonu
+    if (currentPage < totalPages) {
+      pageNumbers.push(
+        <li key="next">
+          <button 
+            onClick={() => handlePageChange(currentPage + 1)} 
+            className="px-3 py-1 rounded-md bg-gray-200 text-gray-700"
+          >
+            &gt;
+          </button>
+        </li>
+      );
+    }
+
+    // Son sayfaya atlama butonu
+    if (endPage < totalPages) {
+      pageNumbers.push(
+        <li key="last">
+          <button 
+            onClick={() => handlePageChange(totalPages)} 
+            className="px-3 py-1 rounded-md bg-gray-200 text-gray-700"
+          >
+            Son
+          </button>
+        </li>
+      );
+    }
+
+    return pageNumbers;
   };
 
   if (fetchState === "FETCHING") {
@@ -46,9 +140,14 @@ const PaginatedProductList = () => {
 
   return (
     <div>
+      {/* Toplam Ürün Bilgisi */}
+      <div className="text-center mb-4 text-gray-600">
+        Toplam {total} üründen {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, total)} arası gösteriliyor
+      </div>
+
       {/* Ürün Listesi */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {currentProducts.map((product) => (
+        {productList.map((product) => (
           <div 
             key={product.id} 
             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
@@ -87,28 +186,10 @@ const PaginatedProductList = () => {
       {/* Sayfalama */}
       <div className="flex justify-center mt-8">
         <nav>
-          <ul className="flex space-x-2">
-            {[...Array(totalPages)].map((_, index) => (
-              <li key={index}>
-                <button
-                  onClick={() => handlePageChange(index + 1)}
-                  className={`px-4 py-2 rounded-md ${
-                    currentPage === index + 1 
-                      ? 'bg-blue-500 text-white' 
-                      : 'bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              </li>
-            ))}
+          <ul className="flex space-x-2 items-center">
+            {renderPageNumbers()}
           </ul>
         </nav>
-      </div>
-
-      {/* Toplam ürün sayısı bilgisi */}
-      <div className="text-center mt-6 text-gray-600">
-        Toplam {total} ürün içinden {currentProducts.length} ürün gösteriliyor
       </div>
     </div>
   );

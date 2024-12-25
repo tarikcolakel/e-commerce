@@ -15,7 +15,7 @@ export const fetchProducts = () => {
     try {
       dispatch(setFetchState("FETCHING"));
       
-      const { category, filter, sort } = getState().product;
+      const { category, filter, sort, limit, offset } = getState().product;
       
       // Dinamik query parametreleri oluştur
       const queryParams = new URLSearchParams();
@@ -33,6 +33,15 @@ export const fetchProducts = () => {
       // Sıralama parametresi
       if (sort) {
         queryParams.append('sort', sort);
+      }
+
+      // Limit ve offset parametreleri
+      if (limit) {
+        queryParams.append('limit', limit);
+      }
+      
+      if (offset !== undefined && offset !== null) {
+        queryParams.append('offset', offset);
       }
       
       const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
