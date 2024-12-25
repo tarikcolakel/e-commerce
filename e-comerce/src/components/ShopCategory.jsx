@@ -14,10 +14,11 @@ const ShopCategory = () => {
     }
   }, [status, dispatch]);
 
-  // Gender'a göre kategorileri filtrele
-  const filteredCategories = categories.filter(cat => 
-    gender ? cat.gender.toLowerCase() === gender.toLowerCase() : true
-  );
+  // Gender'a göre kategorileri filtrele ve rating'e göre sırala
+  const filteredCategories = categories
+    .filter(cat => gender ? cat.gender.toLowerCase() === gender.toLowerCase() : true)
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 5);
 
   if (status === 'loading') {
     return <div className="container mx-auto px-4 py-4">Kategoriler yükleniyor...</div>;
