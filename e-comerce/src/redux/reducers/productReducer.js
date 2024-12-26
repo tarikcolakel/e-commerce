@@ -3,19 +3,24 @@ import { createSlice } from '@reduxjs/toolkit';
 const productSlice = createSlice({
   name: 'product',
   initialState: {
-    products: [],  // products olarak düzeltildi
+    products: [],
     total: 0,
     limit: 25,
     offset: 0,
     currentPage: 1,
     category: null,
     filter: '',
-    sort: ''
+    sort: '',
+    currentProduct: null,
+    loading: false,
+    error: null
   },
   reducers: {
     setProducts: (state, action) => {
-      state.products = action.payload.products;
-      state.total = action.payload.total;
+      state.products = action.payload;
+    },
+    setTotal: (state, action) => {
+      state.total = action.payload;
     },
     setLimit: (state, action) => {
       state.limit = action.payload;
@@ -41,18 +46,36 @@ const productSlice = createSlice({
       state.sort = action.payload;
       state.offset = 0;
       state.currentPage = 1;
+    },
+    fetchProductDetailStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    fetchProductDetailSuccess: (state, action) => {
+      state.loading = false;
+      state.currentProduct = action.payload;
+      state.error = null;
+    },
+    fetchProductDetailFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+      state.currentProduct = null;
     }
   }
 });
 
-export const { 
-  setProducts, 
-  setLimit, 
-  setOffset, 
-  setCurrentPage, 
-  setCategory, 
-  setFilter, 
-  setSort 
+export const {
+  setProducts,
+  setTotal,
+  setLimit,
+  setOffset,
+  setCurrentPage,
+  setCategory,
+  setFilter,
+  setSort,
+  fetchProductDetailStart,
+  fetchProductDetailSuccess,
+  fetchProductDetailFailure
 } = productSlice.actions;
 
 export default productSlice.reducer;

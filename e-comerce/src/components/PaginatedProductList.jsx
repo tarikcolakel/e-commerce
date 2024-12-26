@@ -1,43 +1,38 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import { setCurrentPage } from '../redux/reducers/productReducer';
 import { fetchProducts } from '../redux/actions/productActions';
 
 const PaginatedProductList = () => {
   const dispatch = useDispatch();
-  const { 
-    products = [],  // Default boş dizi
-    total, 
-    itemsPerPage = 25,     // Default limit
-    currentPage = 1 // Default sayfa
-  } = useSelector((state) => state.product);
+  const navigate = useNavigate();
+  const { products = [], total, itemsPerPage = 25, currentPage = 1 } = useSelector((state) => state.product);
 
-  // Sayfa değiştiğinde
   const handlePageChange = (selectedPage) => {
-    // Yeni sayfayı güncelle
     dispatch(setCurrentPage(selectedPage.selected + 1));
-    
-    // Ürünleri yeniden getir
     dispatch(fetchProducts());
   };
 
-  // Toplam sayfa sayısını hesapla
+  const handleProductClick = (product) => {
+    navigate(`/product/${product.id}`);
+  };
+
   const pageCount = Math.ceil(total / itemsPerPage);
 
   return (
     <div>
-      {/* Toplam Ürün Bilgisi */}
       <div className="text-center mb-4 text-gray-600">
         Toplam {total} üründen {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, total)} arası gösteriliyor
       </div>
 
-      {/* Ürün listesi */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {products.map((product) => (
           <div 
             key={product.id} 
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+            onClick={() => handleProductClick(product)}
+            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer"
           >
             <div className="relative">
               <img 
@@ -70,7 +65,6 @@ const PaginatedProductList = () => {
         ))}
       </div>
 
-      {/* Pagination */}
       {total > itemsPerPage && (
         <div className="flex justify-center mt-8">
           <ReactPaginate
@@ -95,3 +89,4 @@ const PaginatedProductList = () => {
 };
 
 export default PaginatedProductList;
+

@@ -23,6 +23,7 @@ const App = () => {
             <Route path="/shop" element={<ShopPage />} />
             <Route path="shop/:gender/:categoryName/:categoryId" element={<ShopPage />} />
             <Route path="/product" element={<ProductPage />} />
+            <Route path="/product/:productId" element={<ProductPage />} />
            
           </Routes>
           
