@@ -1,37 +1,58 @@
-const initialState = {
-    productList: [],
+import { createSlice } from '@reduxjs/toolkit';
+
+const productSlice = createSlice({
+  name: 'product',
+  initialState: {
+    products: [],  // products olarak düzeltildi
     total: 0,
-    limit: 24,  // Varsayılan sayfa başı ürün sayısı
-    offset: 0,  // Varsayılan başlangıç offseti
+    limit: 25,
+    offset: 0,
+    currentPage: 1,
     category: null,
-    filter: "",
-    sort: "",
-    fetchState: "NOT_FETCHED",
-  };
-  
-  const productReducer = (state = initialState, action) => {
-    switch (action.type) {
-      case "SET_PRODUCT_LIST":
-        return { ...state, productList: action.payload };
-      case "SET_TOTAL":
-        return { ...state, total: action.payload };
-      case "SET_FETCH_STATE":
-        return { ...state, fetchState: action.payload };
-      case "SET_CATEGORY":
-        return { ...state, category: action.payload };
-      case "SET_FILTER":
-        return { ...state, filter: action.payload };
-      case "SET_SORT":
-        return { ...state, sort: action.payload };
-      case "SET_LIMIT":
-        return { ...state, limit: action.payload };
-      case "SET_OFFSET":
-        return { ...state, offset: action.payload };
-      case "RESET_PRODUCTS":
-        return { ...initialState };
-      default:
-        return state;
+    filter: '',
+    sort: ''
+  },
+  reducers: {
+    setProducts: (state, action) => {
+      state.products = action.payload.products;
+      state.total = action.payload.total;
+    },
+    setLimit: (state, action) => {
+      state.limit = action.payload;
+    },
+    setOffset: (state, action) => {
+      state.offset = action.payload;
+    },
+    setCurrentPage: (state, action) => {
+      state.currentPage = action.payload;
+      state.offset = (action.payload - 1) * state.limit;
+    },
+    setCategory: (state, action) => {
+      state.category = action.payload;
+      state.offset = 0;
+      state.currentPage = 1;
+    },
+    setFilter: (state, action) => {
+      state.filter = action.payload;
+      state.offset = 0;
+      state.currentPage = 1;
+    },
+    setSort: (state, action) => {
+      state.sort = action.payload;
+      state.offset = 0;
+      state.currentPage = 1;
     }
-  };
-  
-  export default productReducer;
+  }
+});
+
+export const { 
+  setProducts, 
+  setLimit, 
+  setOffset, 
+  setCurrentPage, 
+  setCategory, 
+  setFilter, 
+  setSort 
+} = productSlice.actions;
+
+export default productSlice.reducer;

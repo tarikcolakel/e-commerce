@@ -22,34 +22,39 @@ const ShopPage = () => {
   const { gender, categoryName, categoryId } = useParams();
   const { category, filter, sort } = useSelector(state => state.product);
 
-  // Sayfa yüklendiğinde veya kategori değiştiğinde ürünleri fetch et
+  // Kategori seçildiğinde URL'i güncelle ve ürünleri getir
   useEffect(() => {
-    // Kategori ID'sini doğrudan kullan
     if (categoryId) {
+      // Kategori ID'sini state'e kaydet
       dispatch(setCategory(categoryId));
-      dispatch(fetchProducts());
       
-      // Update URL to include category details
+      // URL'i güncelle
       navigate(`/shop/${gender}/${categoryName}/${categoryId}`);
-    } else  {
-      // Gender'a göre genel filtreleme
+      
+      // Ürünleri getir
+      dispatch(fetchProducts());
+    } else {
+      // Kategori seçilmediyse tüm ürünleri getir
       dispatch(setCategory(null));
       dispatch(fetchProducts());
     }
-  }, [gender, categoryId, dispatch, navigate]);
+  }, [gender, categoryId, categoryName, dispatch, navigate]);
 
+  // Filtre değiştiğinde ürünleri yeniden getir
   const handleFilterChange = (e) => {
     const filterText = e.target.value;
     dispatch(setFilter(filterText));
     dispatch(fetchProducts());
   };
 
+  // Sıralama değiştiğinde ürünleri yeniden getir
   const handleSortChange = (e) => {
     const sortValue = e.target.value;
     dispatch(setSort(sortValue));
     dispatch(fetchProducts());
   };
 
+  // Sıralama seçenekleri
   const sortOptions = [
     { value: "price:asc", label: "Fiyat Artan" },
     { value: "price:desc", label: "Fiyat Azalan" },
@@ -57,17 +62,43 @@ const ShopPage = () => {
     { value: "rating:desc", label: "Puan Azalan" }
   ];
 
+  // Seçilen kategorinin başlığını al
+  const categories = useSelector((state) => state.categories.categories);
+  const selectedCategory = categories.find(cat => 
+    cat.id === Number(categoryId) && 
+    cat.code.startsWith(gender === 'kadin' ? 'k:' : 'e:')
+  );
+
+  useEffect(() => {
+    if (categoryId) {
+      dispatch(setCategory(categoryId));
+      
+      // Kategori değiştiğinde URL'i güncelle
+      if (selectedCategory) {
+        const formattedTitle = selectedCategory.title.toLowerCase()
+          .replace('ı', 'i')
+          .replace('ö', 'o')
+          .replace('ü', 'u')
+          .replace('ş', 's')
+          .replace('ğ', 'g')
+          .replace('ç', 'c');
+        
+        navigate(`/shop/${gender}/${formattedTitle}/${categoryId}`);
+      }
+
+      dispatch(fetchProducts());
+    }
+  }, [categoryId, gender, selectedCategory, dispatch, navigate]);
+
   // Sayfa başlığını oluştur
-  const pageTitle = gender 
-    ? (gender === 'kadin' ? 'Kadın' : 'Erkek') + 
-      (categoryName ? ` ${categoryName}` : ' Ürünleri')
-    : 'Tüm Ürünler';
+  const pageTitle = selectedCategory 
+    ? `${selectedCategory.code.startsWith('k:') ? 'Kadın' : 'Erkek'} ${selectedCategory.title} Ürünleri`
+    : `${selectedCategory ? selectedCategory.code.startsWith('k:') ? 'Kadın' : 'Erkek' : gender === 'kadin' ? 'Kadın' : 'Erkek'} Ürünleri`;
 
   return (
     <div>
       <HeaderShop />
       <ShopCategory/>
-      <ShopFilter />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">{pageTitle}</h1>

@@ -10,47 +10,52 @@ export const setCategory = (categoryId) => ({ type: "SET_CATEGORY", payload: cat
 export const setFilter = (filterText) => ({ type: "SET_FILTER", payload: filterText });
 export const setSort = (sortValue) => ({ type: "SET_SORT", payload: sortValue });
 
+import { setProducts } from '../reducers/productReducer';
+
 export const fetchProducts = () => {
   return async (dispatch, getState) => {
     try {
-      dispatch(setFetchState("FETCHING"));
-      
       const { category, filter, sort, limit, offset } = getState().product;
       
-      // Dinamik query parametreleri oluştur
       const queryParams = new URLSearchParams();
       
-      // Kategori parametresi
+      // Pagination parametreleri
+      queryParams.append('limit', limit);
+      queryParams.append('offset', offset);
+      
       if (category) {
         queryParams.append('category', category);
       }
       
-      // Filtre parametresi
       if (filter) {
         queryParams.append('filter', filter);
       }
       
-      // Sıralama parametresi
       if (sort) {
         queryParams.append('sort', sort);
       }
 
-      // Limit ve offset parametreleri
-      queryParams.append('limit', limit || 24);
-      queryParams.append('offset', offset || 0);
+      const queryString = queryParams.toString() 
+        ? `?${queryParams.toString()}` 
+        : '';
       
-      const queryString = `?${queryParams.toString()}`;
-      
-      const response = await axios.get(`https://workintech-fe-ecommerce.onrender.com/products${queryString}`);
-      
-      dispatch(setTotal(response.data.total || 0));
-      dispatch(setProductList(response.data.products || []));
-      dispatch(setFetchState("FETCHED"));
+      const response = await axios.get(
+        `https://workintech-fe-ecommerce.onrender.com/products${queryString}`
+      );
+
+      // Total ürün sayısını ve ürünleri güncelle
+      dispatch(setProducts({
+        products: response.data.products || [],
+        total: response.data.total || 0
+      }));
+
     } catch (error) {
-      console.error("Ürünler yüklenirken hata oluştu:", error);
-      dispatch(setFetchState("FAILED"));
-      dispatch(setTotal(0));
-      dispatch(setProductList([]));
+      console.error('Ürünleri getirirken hata oluştu:', error);
+      // Hata durumunda boş liste ve 0 total
+      dispatch(setProducts({
+        products: [],
+        total: 0
+      }));
     }
-  };
+  }
 };
