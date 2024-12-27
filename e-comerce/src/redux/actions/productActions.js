@@ -29,10 +29,11 @@ export const setFilter = (filterText) => ({ type: SET_FILTER, payload: filterTex
 export const setSort = (sortValue) => ({ type: SET_SORT, payload: sortValue });
 
 // Thunk Actions
-export const fetchProducts = () => {
+export const fetchProducts = (options = {}) => {
   return async (dispatch, getState) => {
     try {
-      const { category, filter, sort, limit, offset } = getState().product;
+      const state = getState().product;
+      const { category, filter, sort, limit, offset } = { ...state, ...options };
       
       const queryParams = new URLSearchParams();
       
