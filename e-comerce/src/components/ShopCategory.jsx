@@ -17,6 +17,9 @@ const ShopCategory = () => {
 
   // Kategori seçildiğinde çalışacak fonksiyon
   const handleCategorySelect = (category) => {
+    // Kategori kodundan cinsiyeti belirle (k: veya e: ile başlıyor)
+    const categoryGender = category.code.startsWith('k:') ? 'kadin' : 'erkek';
+    
     // URL'de küçük harfle ve Türkçe karaktersiz olarak oluştur
     const formattedTitle = category.title.toLowerCase()
       .replace('ı', 'i')
@@ -26,8 +29,8 @@ const ShopCategory = () => {
       .replace('ğ', 'g')
       .replace('ç', 'c');
 
-    // Navigasyon
-    navigate(`/shop/${gender}/${formattedTitle}/${category.id}`);
+    // Navigasyon - categoryGender'ı kullan
+    navigate(`/shop/${categoryGender}/${formattedTitle}/${category.id}`);
   };
 
   // Gender'a göre kategorileri filtrele ve rating'e göre sırala
@@ -35,8 +38,8 @@ const ShopCategory = () => {
     .filter(cat => {
       // Gelen gender parametresini kontrol et
       const genderCode = gender === 'kadin' ? 'k:' : 
-                         gender === 'erkek' ? 'e:' : 
-                         null;
+                        gender === 'erkek' ? 'e:' : 
+                        null;
       return genderCode ? cat.code.startsWith(genderCode) : true;
     })
     .sort((a, b) => b.rating - a.rating)

@@ -1,7 +1,14 @@
 import React, { useState } from "react";
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../redux/reducers/cartReducer';
 
 const ProductCard = ({ product }) => {
+  const dispatch = useDispatch();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const handleAddToCart = () => {
+    dispatch(addToCart(product));
+  };
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prevIndex) =>
@@ -69,7 +76,10 @@ const ProductCard = ({ product }) => {
           <div className="mb-4">
             <p className="text-gray-600">Satış: {product.sell_count}</p>
           </div>
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded w-full">
+          <button 
+            onClick={handleAddToCart}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded w-full"
+          >
             Sepete Ekle
           </button>
         </div>

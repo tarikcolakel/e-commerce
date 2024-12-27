@@ -1,47 +1,24 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-
-import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
-import 'react-toastify/dist/ReactToastify.css';
-import { loginUser } from '../redux/actions/clientActions';
+import { useNavigate } from 'react-router-dom';
+import { login } from '../redux/actions/authActions';
 
 const Login = () => {
-  const [rememberMe, setRememberMe] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const navigate = useNavigate();
-
   const dispatch = useDispatch();
-  const { loading, error } = useSelector(state => state.client);
+  const navigate = useNavigate();
+  const { error } = useSelector(state => state.auth);
+  
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false
+  });
 
-  const onSubmit = async (data) => {
-    try {
-      await dispatch(loginUser(data, rememberMe, navigate));
-    } catch (error) {
-      if (error.response && error.response.data) {
-        // Hata mesajını özelleştirmek ve simgeyi küçültmek
-        toast.error(error.response.data.message || 'Login failed!', {
-          icon: (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-5 h-5 text-red-500"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.054 0 1.502-1.288.732-1.965l-6.928-6.197a1 1 0 00-1.366 0L5.206 17.035c-.77.677-.322 1.965.732 1.965z"
-              />
-            </svg>
-          ),
-        });
-     
-      }
-    }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { email, password, rememberMe } = formData;
+    await dispatch(login({ email, password }, rememberMe));
+    navigate('/');
   };
 
   return (
@@ -49,7 +26,7 @@ const Login = () => {
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">Login</h2>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-600">Email</label>
             <input
@@ -57,15 +34,9 @@ const Login = () => {
               id="email"
               className="w-full p-3 border border-gray-300 rounded-md mt-2"
               placeholder="Enter your email"
-              {...register('email', {
-                required: 'Email is required',
-                pattern: {
-                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                  message: 'Invalid email address',
-                },
-              })}
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
-            {errors.email && <p className="text-red-500 text-sm mt-2">{errors.email.message}</p>}
           </div>
 
           <div className="mb-4">
@@ -75,18 +46,17 @@ const Login = () => {
               id="password"
               className="w-full p-3 border border-gray-300 rounded-md mt-2"
               placeholder="Enter your password"
-              {...register('password', {
-                required: 'Password is required',
-              })}
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
-            {errors.password && <p className="text-red-500 text-sm mt-2">{errors.password.message}</p>}
           </div>
 
           <div className="flex items-center mb-6">
             <input
               type="checkbox"
               className="mr-2"
-              onChange={() => setRememberMe(!rememberMe)}
+              checked={formData.rememberMe}
+              onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
             />
             <label className="text-sm text-gray-600">Remember Me</label>
           </div>
@@ -99,8 +69,6 @@ const Login = () => {
           </button>
         </form>
       </div>
-
-      <ToastContainer />
     </div>
   );
 };
