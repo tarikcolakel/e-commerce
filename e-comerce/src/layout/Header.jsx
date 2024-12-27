@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, X, User, Search, ShoppingCart, ChevronDown } from "lucide-react";
+import { Menu, X, User, Search, ShoppingCart, ChevronDown, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCategories } from '../redux/reducers/categoryReducer';
+import { logoutUser } from '../redux/actions/authActions';
+import CartDropdown from '../components/CartDropdown';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
   const dispatch = useDispatch();
   const { categories, status } = useSelector((state) => state.categories);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
     console.log('Categories:', categories); // Debug için
@@ -54,6 +58,11 @@ const Header = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    setUserMenuOpen(false);
+  };
 
   return (
     <header className="shadow-md relative" ref={menuRef}>
@@ -131,15 +140,42 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          <User className="w-5 h-5 cursor-pointer" />
-          <Link to="/login" className="text-blue-600 font-medium hover:underline">
-            Login
-          </Link>
-          <Link to="/signup" className="text-blue-600 font-medium hover:underline">
-            / Register
-          </Link>
+          {isAuthenticated ? (
+            <div className="relative">
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700"
+              >
+                <User className="w-5 h-5" />
+                <span className="font-medium">{user?.name || 'Kullanıcı'}</span>
+                <ChevronDown className="w-4 h-4" />
+              </button>
+
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 w-full"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Çıkış Yap
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <Link to="/login" className="text-blue-600 font-medium hover:underline">
+                Login
+              </Link>
+              <Link to="/signup" className="text-blue-600 font-medium hover:underline">
+                / Register
+              </Link>
+            </>
+          )}
+          
           <Search className="w-5 h-5 cursor-pointer" />
-          <ShoppingCart className="w-5 h-5 cursor-pointer" />
+          <CartDropdown />
           <button
             onClick={toggleMenu}
             className="md:hidden"
