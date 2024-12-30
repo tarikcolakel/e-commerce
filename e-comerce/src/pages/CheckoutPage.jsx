@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeFromCart, updateItemCount, toggleItemCheck } from '../redux/reducers/cartReducer';
+import { fetchAddresses, deleteAddress } from '../redux/actions/addressActions';
+import { toggleAddressForm, setSelectedAddress } from '../redux/reducers/addressReducer';
+import AddressForm from '../components/AddressForm';
 
 const CheckoutPage = () => {
   const dispatch = useDispatch();
+  const { addresses, showAddressForm, selectedAddress } = useSelector(state => state.address);
   const { items } = useSelector(state => state.cart);
   
+  useEffect(() => {
+    dispatch(fetchAddresses());
+  }, [dispatch]);
+
   // Hesaplamalar
   const subtotal = items
     .filter(item => item.checked)
@@ -20,8 +28,70 @@ const CheckoutPage = () => {
       <h1 className="text-2xl font-bold mb-6">Ödeme Sayfası</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Sol taraf - Ürün listesi */}
+        {/* Sol taraf - Adres ve Ürün listesi */}
         <div className="lg:col-span-2">
+          {/* Adres Seçimi */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Adres Bilgileri</h2>
+              <button
+                onClick={() => dispatch(toggleAddressForm())}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+              >
+                Yeni Adres Ekle
+              </button>
+            </div>
+
+            {showAddressForm ? (
+              <AddressForm existingAddress={selectedAddress} />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {addresses.map(address => (
+                  <div
+                    key={address.id}
+                    className={`p-4 border rounded-lg cursor-pointer ${
+                      selectedAddress?.id === address.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                    }`}
+                    onClick={() => dispatch(setSelectedAddress(address))}
+                  >
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-medium">{address.title}</h3>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(setSelectedAddress(address));
+                            dispatch(toggleAddressForm());
+                          }}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          Düzenle
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(deleteAddress(address.id));
+                          }}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          Sil
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-gray-600 mt-2">
+                      {address.name} {address.surname}
+                    </p>
+                    <p className="text-gray-600">{address.phone}</p>
+                    <p className="text-gray-600 mt-1">
+                      {address.neighborhood}, {address.district}/{address.city}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Ürün listesi - mevcut kod */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4">Sepetim ({items.length} Ürün)</h2>
             

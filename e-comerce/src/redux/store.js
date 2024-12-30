@@ -6,6 +6,7 @@ import shoppingCartReducer from "./reducers/shoppingCartReducer";
 import categoryReducer from './reducers/categoryReducer';
 import cartReducer from './reducers/cartReducer';
 import authReducer from './reducers/authReducer';
+import addressReducer from './reducers/addressReducer';
 
 const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ const store = configureStore({
     categories: categoryReducer,
     cart: cartReducer,
     auth: authReducer,
+    address: addressReducer,
   },
   middleware: (getDefaultMiddleware) => 
     getDefaultMiddleware({
