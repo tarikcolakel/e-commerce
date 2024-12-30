@@ -1,13 +1,26 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { removeFromCart, updateItemCount, toggleItemCheck, toggleCart } from '../redux/reducers/cartReducer';
 
 const CartDropdown = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { items, isOpen } = useSelector(state => state.cart);
 
-  const totalItems = items.reduce((sum, item) => sum + item.count, 0);
-  const totalPrice = items.reduce((sum, item) => sum + (item.product.price * item.count), 0);
+  // Sadece seçili ürünlerin toplam tutarını hesapla
+  const subtotal = items
+    .filter(item => item.checked)
+    .reduce((sum, item) => sum + (item.product.price * item.count), 0);
+  
+  const shippingCost = items.length === 0 ? 0 : (subtotal > 150 ? 0 : 29.99); // Sepet boşsa veya 150 TL üzeri ise kargo bedava
+  const discount = subtotal > 150 ? 29.99 : 0; // Kargo bedava ise indirim uygula
+  const grandTotal = subtotal + shippingCost - discount;
+
+  const handleCheckout = () => {
+    dispatch(toggleCart()); // Sepeti kapat
+    navigate('/checkout'); // Checkout sayfasına yönlendir
+  };
 
   return (
     <div className="relative">
@@ -18,73 +31,166 @@ const CartDropdown = () => {
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
-        <span className="bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-          {totalItems}
-        </span>
+        {items.length > 0 && (
+          <span className="bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+            {items.length}
+          </span>
+        )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl z-50">
-          <div className="p-4">
-            <h3 className="text-lg font-semibold mb-4">Sepetim ({totalItems} Ürün)</h3>
-            
-            {items.map(item => (
-              <div key={item.product.id} className="flex items-center space-x-4 mb-4 pb-4 border-b">
-                <input
-                  type="checkbox"
-                  checked={item.checked}
-                  onChange={() => dispatch(toggleItemCheck(item.product.id))}
-                  className="w-4 h-4"
-                />
+        <div className="absolute right-0 mt-2 w-[800px] bg-white rounded-lg shadow-xl z-50">
+          <div className="p-4 flex">
+            {/* Sol taraf - Ürün listesi */}
+            <div className="flex-1 pr-4 border-r">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Sepetim ({items.length} Ürün)</h3>
+                {items.length > 0 && (
+                  <button 
+                    onClick={() => dispatch(toggleCart())}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+              
+              {items.length === 0 ? (
+                <p className="text-center text-gray-500 py-4">Sepetiniz boş</p>
+              ) : (
+                <div className="max-h-96 overflow-y-auto">
+                  {items.map(item => (
+                    <div key={item.product.id} className="flex items-center space-x-4 mb-4 pb-4 border-b">
+                      <input
+                        type="checkbox"
+                        checked={item.checked}
+                        onChange={() => dispatch(toggleItemCheck(item.product.id))}
+                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      
+                      <img
+                        src={item.product.images[0]?.url}
+                        alt={item.product.name}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                      
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-sm truncate">{item.product.name}</h4>
+                        <p className="text-gray-600 text-sm">
+                          {item.product.price.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                        </p>
+                        
+                        <div className="flex items-center space-x-2 mt-2">
+                          <button
+                            onClick={() => {
+                              if (item.count === 1) {
+                                dispatch(removeFromCart(item.product.id));
+                              } else {
+                                dispatch(updateItemCount({ 
+                                  productId: item.product.id, 
+                                  count: item.count - 1 
+                                }));
+                              }
+                            }}
+                            className="w-6 h-6 flex items-center justify-center bg-gray-100 rounded hover:bg-gray-200"
+                          >
+                            -
+                          </button>
+                          <span className="w-8 text-center">{item.count}</span>
+                          <button
+                            onClick={() => dispatch(updateItemCount({ 
+                              productId: item.product.id, 
+                              count: item.count + 1 
+                            }))}
+                            className="w-6 h-6 flex items-center justify-center bg-gray-100 rounded hover:bg-gray-200"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <button
+                        onClick={() => dispatch(removeFromCart(item.product.id))}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Sağ taraf - Sipariş özeti */}
+            <div className="w-72 pl-4">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-4">Sipariş Özeti</h3>
                 
-                <img
-                  src={item.product.images[0]?.url}
-                  alt={item.product.name}
-                  className="w-16 h-16 object-cover rounded"
-                />
-                
-                <div className="flex-1">
-                  <h4 className="font-semibold">{item.product.name}</h4>
-                  <p className="text-gray-600">
-                    {item.product.price.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
-                  </p>
-                  
-                  <div className="flex items-center space-x-2 mt-2">
-                    <button
-                      onClick={() => dispatch(updateItemCount({ productId: item.product.id, count: Math.max(0, item.count - 1) }))}
-                      className="px-2 py-1 bg-gray-100 rounded"
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Ürünlerin Toplamı</span>
+                    <span className="font-medium">
+                      {subtotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                    </span>
+                  </div>
+
+                  {items.length > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Kargo Toplam</span>
+                      <span className="font-medium">
+                        {shippingCost.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                      </span>
+                    </div>
+                  )}
+
+                  {discount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>150 TL Üzeri Kargo Bedava</span>
+                      <span>-{discount.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</span>
+                    </div>
+                  )}
+
+                  <div className="pt-3 border-t border-gray-200">
+                    <div className="flex justify-between font-semibold text-lg">
+                      <span>Toplam</span>
+                      <span className="text-blue-600">
+                        {grandTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* İndirim kodu alanı */}
+                  <div className="pt-3">
+                    <button 
+                      className="w-full text-center text-blue-600 hover:text-blue-700 font-medium"
+                      onClick={() => {/* İndirim kodu fonksiyonu */}}
                     >
-                      -
-                    </button>
-                    <span>{item.count}</span>
-                    <button
-                      onClick={() => dispatch(updateItemCount({ productId: item.product.id, count: item.count + 1 }))}
-                      className="px-2 py-1 bg-gray-100 rounded"
-                    >
-                      +
+                      İndirim Kodu Gir
                     </button>
                   </div>
                 </div>
-                
-                <button
-                  onClick={() => dispatch(removeFromCart(item.product.id))}
-                  className="text-red-500 hover:text-red-700"
+
+                {/* Sipariş oluştur butonu */}
+                <button 
+                  onClick={handleCheckout}
+                  className="w-full mt-4 bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  Sepeti Onayla
                 </button>
               </div>
-            ))}
-            
-            <div className="mt-4 pt-4 border-t">
-              <div className="flex justify-between font-semibold">
-                <span>Toplam:</span>
-                <span>{totalPrice.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</span>
-              </div>
-              <button className="w-full mt-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
-                Sepeti Onayla
-              </button>
+
+              {/* Kargo bilgisi */}
+              {items.length > 0 && subtotal < 150 && (
+                <div className="mt-4 text-sm text-gray-600 text-center">
+                  <span className="text-blue-600 font-medium">
+                    {(150 - subtotal).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                  </span> değerinde ürün daha ekleyin, kargo bedava olsun!
+                </div>
+              )}
             </div>
           </div>
         </div>
