@@ -8,6 +8,7 @@ import cartReducer from './reducers/cartReducer';
 import authReducer from './reducers/authReducer';
 import addressReducer from './reducers/addressReducer';
 import cardReducer from './reducers/cardReducer';
+import orderReducer from './reducers/orderReducer';
 
 const store = configureStore({
   reducer: {
@@ -18,7 +19,8 @@ const store = configureStore({
     cart: cartReducer,
     auth: authReducer,
     address: addressReducer,
-    card: cardReducer
+    card: cardReducer,
+    order: orderReducer
   },
   middleware: (getDefaultMiddleware) => 
     getDefaultMiddleware({

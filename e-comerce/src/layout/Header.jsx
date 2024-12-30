@@ -1,24 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, X, User, Search, ShoppingCart, ChevronDown, LogOut } from "lucide-react";
+import { Menu, X, Search, ShoppingCart, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCategories } from '../redux/reducers/categoryReducer';
-import { logoutUser } from '../redux/actions/authActions';
 import CartDropdown from '../components/CartDropdown';
+import HeaderMenu from "../components/HeaderMenu";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const menuRef = useRef(null);
 
   const dispatch = useDispatch();
   const { categories, status } = useSelector((state) => state.categories);
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { items } = useSelector((state) => state.cart);
+
+  const itemCount = items.reduce((total, item) => total + item.count, 0);
 
   useEffect(() => {
-    console.log('Categories:', categories); // Debug için
-    console.log('Status:', status); // Debug için
     if (status === 'idle') {
       dispatch(fetchCategories());
     }
@@ -34,15 +35,18 @@ const Header = () => {
     return acc;
   }, {});
 
-  console.log('CategoriesByGender:', categoriesByGender); // Debug için
-
   const toggleMenu = () => {
     setMenuOpen((prevMenuOpen) => !prevMenuOpen);
   };
 
   const handleShopIconClick = (e) => {
-    e.preventDefault(); // Link'in varsayılan davranışını engelle
+    e.preventDefault();
     setShopOpen((prevShopOpen) => !prevShopOpen);
+  };
+
+  const toggleCart = (e) => {
+    e.preventDefault();
+    setCartOpen(!cartOpen);
   };
 
   useEffect(() => {
@@ -58,11 +62,6 @@ const Header = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const handleLogout = () => {
-    dispatch(logoutUser());
-    setUserMenuOpen(false);
-  };
 
   return (
     <header className="shadow-md relative" ref={menuRef}>
@@ -140,42 +139,25 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          {isAuthenticated ? (
-            <div className="relative">
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700"
-              >
-                <User className="w-5 h-5" />
-                <span className="font-medium">{user?.name || 'Kullanıcı'}</span>
-                <ChevronDown className="w-4 h-4" />
-              </button>
-
-              {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 w-full"
-                  >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Çıkış Yap
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <>
-              <Link to="/login" className="text-blue-600 font-medium hover:underline">
-                Login
-              </Link>
-              <Link to="/signup" className="text-blue-600 font-medium hover:underline">
-                / Register
-              </Link>
-            </>
-          )}
-          
+          <HeaderMenu />
           <Search className="w-5 h-5 cursor-pointer" />
-          <CartDropdown />
+          
+          <div className="relative">
+            <button 
+              onClick={toggleCart}
+              className="relative text-gray-600 hover:text-gray-900"
+            >
+              <ShoppingCart className="w-6 h-6" />
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
+            </button>
+
+            {cartOpen && <CartDropdown onClose={() => setCartOpen(false)} />}
+          </div>
+
           <button
             onClick={toggleMenu}
             className="md:hidden"
