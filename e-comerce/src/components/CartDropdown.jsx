@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { removeFromCart, updateItemCount, toggleItemCheck, toggleCart } from '../redux/reducers/cartReducer';
+import { removeFromCart, updateItemCount, toggleItemCheck } from '../redux/reducers/cartReducer';
 
 const CartDropdown = ({ onClose }) => {
   const dispatch = useDispatch();
@@ -18,7 +18,7 @@ const CartDropdown = ({ onClose }) => {
   const grandTotal = subtotal + shippingCost - discount;
 
   const handleCheckout = () => {
-    dispatch(toggleCart()); // Sepeti kapat
+    onClose(); // Sepet menüsünü kapat
     navigate('/checkout'); // Checkout sayfasına yönlendir
   };
 
