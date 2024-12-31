@@ -139,7 +139,25 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          <HeaderMenu />
+          {isAuthenticated ? (
+            <HeaderMenu />
+          ) : (
+            <>
+              <Link 
+                to="/login" 
+                className="text-gray-600 hover:text-gray-900"
+              >
+                Giriş Yap
+              </Link>
+              <Link 
+                to="/signup" 
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Kayıt Ol
+              </Link>
+            </>
+          )}
+
           <Search className="w-5 h-5 cursor-pointer" />
           
           <div className="relative">
