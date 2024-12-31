@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrders } from '../redux/actions/orderActions';
+import { fetchAddresses } from '../redux/actions/addressActions';
 import { ChevronDown as ChevronDownIcon, ChevronUp as ChevronUpIcon } from 'lucide-react';
 
 const OrdersPage = () => {
   const dispatch = useDispatch();
   const { orders, loading } = useSelector(state => state.order);
+  const { addresses } = useSelector(state => state.address);
   const [expandedOrder, setExpandedOrder] = useState(null);
 
   useEffect(() => {
     dispatch(fetchOrders());
+    dispatch(fetchAddresses());
   }, [dispatch]);
 
   if (loading) {
@@ -39,20 +42,22 @@ const OrdersPage = () => {
   };
 
   // Adres bilgilerini güvenli bir şekilde göster
-  const renderAddress = (address) => {
+  const renderAddress = (order) => {
+    // Sipariş ile ilişkili adresi bul
+    const address = addresses.find(addr => addr.id === order.address_id);
+    
     if (!address) return <p className="text-gray-500">Adres bilgisi bulunamadı</p>;
 
     return (
       <div className="space-y-2 text-gray-600">
-        <p className="font-medium">{address.title || 'İsimsiz Adres'}</p>
+        <p className="font-medium">{address.title}</p>
         <p>{address.name} {address.surname}</p>
-        <p>{address.phone || 'Telefon bilgisi yok'}</p>
+        <p>{address.phone}</p>
         <p className="text-sm">
-          {[
-            address.neighborhood,
-            address.district,
-            address.city
-          ].filter(Boolean).join(', ') || 'Adres detayı yok'}
+          {address.neighborhood}, {address.district}/{address.city}
+        </p>
+        <p className="text-sm text-gray-500">
+          {address.address_detail}
         </p>
       </div>
     );
@@ -108,7 +113,7 @@ const OrdersPage = () => {
 
       <div className="space-y-4">
         {orders.map(order => (
-          <div key={order.id || Math.random()} className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div key={order.id} className="bg-white rounded-lg shadow-md overflow-hidden">
             {/* Sipariş Başlığı - Tıklanabilir Alan */}
             <div
               onClick={() => toggleOrder(order.id)}
@@ -139,7 +144,7 @@ const OrdersPage = () => {
                   {/* Teslimat Adresi */}
                   <div className="bg-white p-4 rounded-lg shadow-sm">
                     <h3 className="font-semibold text-lg mb-3 text-blue-600">Teslimat Adresi</h3>
-                    {renderAddress(order.address)}
+                    {renderAddress(order)}
                   </div>
 
                   {/* Ödeme Bilgileri */}

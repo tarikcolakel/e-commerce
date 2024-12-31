@@ -7,11 +7,13 @@ import {
 
 // Adresleri getir
 export const fetchAddresses = () => async (dispatch) => {
-  dispatch(fetchAddressesStart());
   try {
     const response = await axiosInstance.get('/user/address');
-    dispatch(fetchAddressesSuccess(response.data));
+    if (response.data) {
+      dispatch(fetchAddressesSuccess(response.data));
+    }
   } catch (error) {
+    console.error('Adresler alınırken hata oluştu:', error);
     dispatch(fetchAddressesFailure(error.message));
   }
 };

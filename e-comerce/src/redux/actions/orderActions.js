@@ -10,7 +10,6 @@ export const createOrder = (orderData) => async (dispatch) => {
   try {
     const response = await axiosInstance.post('/order', orderData);
     if (response.data) {
-      // Başarılı sipariş sonrası sepeti temizle
       dispatch(clearCart());
       return { success: true };
     }
@@ -28,8 +27,26 @@ export const createOrder = (orderData) => async (dispatch) => {
 export const fetchOrders = () => async (dispatch) => {
   dispatch(fetchOrdersStart());
   try {
-    const response = await axiosInstance.get('/order');
-    dispatch(fetchOrdersSuccess(response.data));
+    // Siparişleri al
+    const ordersResponse = await axiosInstance.get('/order');
+    
+    // Her sipariş için adres detaylarını al
+    const ordersWithAddresses = await Promise.all(
+      ordersResponse.data.map(async (order) => {
+        try {
+          const addressResponse = await axiosInstance.get(`/user/address/${order.address_id}`);
+          return {
+            ...order,
+            address: addressResponse.data
+          };
+        } catch (error) {
+          console.error(`Adres detayı alınamadı (ID: ${order.address_id}):`, error);
+          return order;
+        }
+      })
+    );
+
+    dispatch(fetchOrdersSuccess(ordersWithAddresses));
   } catch (error) {
     dispatch(fetchOrdersFailure(error.message));
   }

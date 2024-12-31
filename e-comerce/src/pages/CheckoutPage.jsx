@@ -58,26 +58,26 @@ const CheckoutPage = () => {
       return;
     }
 
-    const orderData = {
-      address_id: selectedAddress.id,
-      order_date: new Date().toISOString(),
-      card_no: parseInt(selectedCard.card_no),
-      card_name: selectedCard.name_on_card,
-      card_expire_month: selectedCard.expire_month,
-      card_expire_year: selectedCard.expire_year,
-      price: grandTotal,
-      products: checkedItems.map(item => ({
-        product_id: item.product.id,
-        count: item.count,
-        detail: `${item.product.name} - ${item.product.size || 'Tek Beden'}`
-      }))
-    };
-
     try {
+      const orderData = {
+        address_id: selectedAddress.id,
+        order_date: new Date().toISOString(),
+        card_no: parseInt(selectedCard.card_no),
+        card_name: selectedCard.name_on_card,
+        card_expire_month: selectedCard.expire_month,
+        card_expire_year: selectedCard.expire_year,
+        price: grandTotal,
+        products: checkedItems.map(item => ({
+          product_id: item.product.id,
+          count: item.count,
+          detail: `${item.product.name} - ${item.product.size || 'Tek Beden'}`
+        }))
+      };
+
       const result = await dispatch(createOrder(orderData));
       if (result.success) {
         alert('Siparişiniz başarıyla oluşturuldu!');
-        navigate('/'); // Ana sayfaya yönlendir
+        navigate('/');
       } else {
         alert(result.error || 'Sipariş oluşturulurken bir hata oluştu');
       }
