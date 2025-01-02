@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import VideoPlayer from '../components/VideoPlayer';
 
 const AboutPage = () => {
   const stats = [
@@ -93,37 +94,12 @@ const AboutPage = () => {
 
         {/* Video Bölümü */}
         <motion.div 
-          className="relative rounded-2xl overflow-hidden my-20"
+          className="my-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <img 
-            src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
-            alt="Mountain Lake"
-            className="w-full h-[500px] object-cover"
-          />
-          <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-            <button 
-              className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
-              onClick={() => {
-                // Video oynatma fonksiyonu buraya gelecek
-                console.log('Play video');
-              }}
-            >
-              <svg 
-                className="w-8 h-8 text-white" 
-                fill="currentColor" 
-                viewBox="0 0 20 20"
-              >
-                <path 
-                  d="M8 5v10l7-5-7-5z"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
+          <VideoPlayer />
         </motion.div>
 
         {/* Alt Kısım - Açıklama */}
