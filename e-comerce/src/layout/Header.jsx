@@ -130,11 +130,11 @@ const Header = () => {
           <Link to="#blog" className="hover:text-blue-600">
             Blog
           </Link>
-          <Link to="#contact" className="hover:text-blue-600">
+          <Link to="/contact" className="hover:text-blue-600">
             Contact
           </Link>
-          <Link to="/product" className="hover:text-blue-600">
-            Product
+          <Link to="/team" className="hover:text-blue-600">
+            Team
           </Link>
         </nav>
 
@@ -203,7 +203,7 @@ const Header = () => {
           <Link to="#pricing" className="text-lg font-medium hover:text-blue-600">
             Pricing
           </Link>
-          <Link to="#contact" className="text-lg font-medium hover:text-blue-600">
+          <Link to="/contact" className="text-lg font-medium hover:text-blue-600">
             Contact
           </Link>
         </nav>

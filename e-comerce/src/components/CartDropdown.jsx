@@ -161,7 +161,7 @@ const CartDropdown = ({ onClose }) => {
             {/* Sipariş oluştur butonu */}
             <button 
               onClick={handleCheckout}
-              className="w-full mt-4 bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+              className="w-full mt-4 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
             >
               Sepeti Onayla
             </button>

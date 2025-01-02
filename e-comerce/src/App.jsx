@@ -10,6 +10,8 @@ import ShopPage from "./pages/ShopPage";
 import ProductPage from "./pages/ProductPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
+import ContactPage from "./pages/ContactPage";
+import TeamPage from "./pages/TeamPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -32,6 +34,8 @@ const App = () => {
           <Route path="shop/:gender/:categoryName/:categoryId" element={<ShopPage />} />
           <Route path="/product" element={<ProductPage />} />
           <Route path="/product/:productId" element={<ProductPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/team" element={<TeamPage />} />
           <Route 
             path="/checkout" 
             element={
