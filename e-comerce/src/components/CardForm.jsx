@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { addCard, updateCard } from '../redux/actions/cardActions';
 import { toggleCardForm } from '../redux/reducers/cardReducer';
+import AnimatedCardForm from './AnimatedCardForm';
 
 const CardForm = ({ existingCard }) => {
   const dispatch = useDispatch();
@@ -86,98 +87,101 @@ const CardForm = ({ existingCard }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Kart Numarası</label>
-        <input
-          type="text"
-          maxLength="16"
-          value={formData.card_no}
-          onChange={(e) => setFormData({ ...formData, card_no: e.target.value.replace(/\D/g, '') })}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          placeholder="1234 5678 9012 3456"
-          required
-        />
-        {errors.card_no && <p className="text-red-500 text-sm mt-1">{errors.card_no}</p>}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Kart Üzerindeki İsim</label>
-        <input
-          type="text"
-          value={formData.name_on_card}
-          onChange={(e) => setFormData({ ...formData, name_on_card: e.target.value })}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          placeholder="Ad Soyad"
-          required
-        />
-        {errors.name_on_card && <p className="text-red-500 text-sm mt-1">{errors.name_on_card}</p>}
-      </div>
-
-      <div className="grid grid-cols-3 gap-4">
+    <>
+      <AnimatedCardForm formData={formData} />
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Ay</label>
-          <select
-            value={formData.expire_month}
-            onChange={(e) => setFormData({ ...formData, expire_month: e.target.value })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            required
-          >
-            <option value="">Ay</option>
-            {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
-              <option key={month} value={month}>{month.toString().padStart(2, '0')}</option>
-            ))}
-          </select>
-          {errors.expire_month && <p className="text-red-500 text-sm mt-1">{errors.expire_month}</p>}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Yıl</label>
-          <select
-            value={formData.expire_year}
-            onChange={(e) => setFormData({ ...formData, expire_year: e.target.value })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            required
-          >
-            <option value="">Yıl</option>
-            {Array.from({ length: 11 }, (_, i) => new Date().getFullYear() + i).map(year => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
-          {errors.expire_year && <p className="text-red-500 text-sm mt-1">{errors.expire_year}</p>}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">CVV</label>
+          <label className="block text-sm font-medium text-gray-700">Kart Numarası</label>
           <input
             type="text"
-            maxLength="3"
-            value={formData.cvv}
-            onChange={(e) => setFormData({ ...formData, cvv: e.target.value.replace(/\D/g, '') })}
+            maxLength="16"
+            value={formData.card_no}
+            onChange={(e) => setFormData({ ...formData, card_no: e.target.value.replace(/\D/g, '') })}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            placeholder="123"
+            placeholder="1234 5678 9012 3456"
             required
           />
-          {errors.cvv && <p className="text-red-500 text-sm mt-1">{errors.cvv}</p>}
+          {errors.card_no && <p className="text-red-500 text-sm mt-1">{errors.card_no}</p>}
         </div>
-      </div>
 
-      <div className="flex justify-end space-x-3">
-        <button
-          type="button"
-          onClick={() => dispatch(toggleCardForm())}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-        >
-          İptal
-        </button>
-        <button
-          type="submit"
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
-        >
-          {existingCard ? 'Güncelle' : 'Kaydet'}
-        </button>
-      </div>
-    </form>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Kart Üzerindeki İsim</label>
+          <input
+            type="text"
+            value={formData.name_on_card}
+            onChange={(e) => setFormData({ ...formData, name_on_card: e.target.value })}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            placeholder="Ad Soyad"
+            required
+          />
+          {errors.name_on_card && <p className="text-red-500 text-sm mt-1">{errors.name_on_card}</p>}
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Ay</label>
+            <select
+              value={formData.expire_month}
+              onChange={(e) => setFormData({ ...formData, expire_month: e.target.value })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              required
+            >
+              <option value="">Ay</option>
+              {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                <option key={month} value={month}>{month.toString().padStart(2, '0')}</option>
+              ))}
+            </select>
+            {errors.expire_month && <p className="text-red-500 text-sm mt-1">{errors.expire_month}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Yıl</label>
+            <select
+              value={formData.expire_year}
+              onChange={(e) => setFormData({ ...formData, expire_year: e.target.value })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              required
+            >
+              <option value="">Yıl</option>
+              {Array.from({ length: 11 }, (_, i) => new Date().getFullYear() + i).map(year => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+            {errors.expire_year && <p className="text-red-500 text-sm mt-1">{errors.expire_year}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">CVV</label>
+            <input
+              type="text"
+              maxLength="3"
+              value={formData.cvv}
+              onChange={(e) => setFormData({ ...formData, cvv: e.target.value.replace(/\D/g, '') })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              placeholder="123"
+              required
+            />
+            {errors.cvv && <p className="text-red-500 text-sm mt-1">{errors.cvv}</p>}
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-3">
+          <button
+            type="button"
+            onClick={() => dispatch(toggleCardForm())}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          >
+            İptal
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+          >
+            {existingCard ? 'Güncelle' : 'Kaydet'}
+          </button>
+        </div>
+      </form>
+    </>
   );
 };
 
