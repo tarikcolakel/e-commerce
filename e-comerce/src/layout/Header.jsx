@@ -124,7 +124,7 @@ const Header = () => {
             )}
           </div>
 
-          <Link to="#about" className="hover:text-blue-600">
+          <Link to="/about" className="hover:text-blue-600">
             About
           </Link>
           <Link to="#blog" className="hover:text-blue-600">

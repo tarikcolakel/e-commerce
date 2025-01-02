@@ -12,6 +12,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
 import ContactPage from "./pages/ContactPage";
 import TeamPage from "./pages/TeamPage";
+import AboutPage from "./pages/AboutPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -36,6 +37,7 @@ const App = () => {
           <Route path="/product/:productId" element={<ProductPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/team" element={<TeamPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route 
             path="/checkout" 
             element={
