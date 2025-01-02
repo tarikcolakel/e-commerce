@@ -34,13 +34,19 @@ export const fetchOrders = () => async (dispatch) => {
     const ordersWithAddresses = await Promise.all(
       ordersResponse.data.map(async (order) => {
         try {
-          const addressResponse = await axiosInstance.get(`/user/address/${order.address_id}`);
+          // Adres detaylarını al
+          const addressResponse = await axiosInstance.get(`/user/address`);
+          // Sipariş ile eşleşen adresi bul
+          const matchingAddress = addressResponse.data.find(
+            addr => addr.id === order.address_id
+          );
+          
           return {
             ...order,
-            address: addressResponse.data
+            address: matchingAddress || null
           };
         } catch (error) {
-          console.error(`Adres detayı alınamadı (ID: ${order.address_id}):`, error);
+          console.error(`Adres detayı alınamadı:`, error);
           return order;
         }
       })
