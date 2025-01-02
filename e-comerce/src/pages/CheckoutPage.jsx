@@ -9,6 +9,7 @@ import { toggleCardForm, setSelectedCard } from '../redux/reducers/cardReducer';
 import CardForm from '../components/CardForm';
 import { useNavigate } from 'react-router-dom';
 import { createOrder } from '../redux/actions/orderActions';
+import AnimatedSelectedCard from '../components/AnimatedSelectedCard';
 
 const CheckoutPage = () => {
   const dispatch = useDispatch();
@@ -169,48 +170,51 @@ const CheckoutPage = () => {
             {showCardForm ? (
               <CardForm existingCard={selectedCard} />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {cards.map(card => (
-                  <div
-                    key={card.id}
-                    className={`p-4 border rounded-lg cursor-pointer ${
-                      selectedCard?.id === card.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                    }`}
-                    onClick={() => dispatch(setSelectedCard(card))}
-                  >
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-medium">{card.name_on_card}</h3>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            dispatch(setSelectedCard(card));
-                            dispatch(toggleCardForm());
-                          }}
-                          className="text-blue-600 hover:text-blue-800"
-                        >
-                          Düzenle
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            dispatch(deleteCard(card.id));
-                          }}
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          Sil
-                        </button>
+              <>
+                {selectedCard && <AnimatedSelectedCard card={selectedCard} />}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {cards.map(card => (
+                    <div
+                      key={card.id}
+                      className={`p-4 border rounded-lg cursor-pointer ${
+                        selectedCard?.id === card.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                      }`}
+                      onClick={() => dispatch(setSelectedCard(card))}
+                    >
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-medium">{card.name_on_card}</h3>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              dispatch(setSelectedCard(card));
+                              dispatch(toggleCardForm());
+                            }}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            Düzenle
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              dispatch(deleteCard(card.id));
+                            }}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            Sil
+                          </button>
+                        </div>
                       </div>
+                      <p className="text-gray-600 mt-2">
+                        **** **** **** {card.card_no.slice(-4)}
+                      </p>
+                      <p className="text-gray-600">
+                        {card.expire_month.toString().padStart(2, '0')}/{card.expire_year}
+                      </p>
                     </div>
-                    <p className="text-gray-600 mt-2">
-                      **** **** **** {card.card_no.slice(-4)}
-                    </p>
-                    <p className="text-gray-600">
-                      {card.expire_month.toString().padStart(2, '0')}/{card.expire_year}
-                    </p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
 
