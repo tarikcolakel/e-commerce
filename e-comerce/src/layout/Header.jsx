@@ -197,8 +197,8 @@ const Header = () => {
           <Link to="/" className="text-lg font-medium hover:text-blue-600">
             Home
           </Link>
-          <Link to="/product" className="text-lg font-medium hover:text-blue-600">
-            Product
+          <Link to="/shop" className="text-lg font-medium hover:text-blue-600">
+           Shop
           </Link>
           <Link to="#pricing" className="text-lg font-medium hover:text-blue-600">
             Pricing
