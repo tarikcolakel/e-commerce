@@ -1,161 +1,211 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, X, User, Search, ShoppingCart } from "lucide-react";
+import { Menu, X, Search, ShoppingCart, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchCategories } from '../redux/reducers/categoryReducer';
+import CartDropdown from '../components/CartDropdown';
+import HeaderMenu from "../components/HeaderMenu";
 
 const Header = () => {
-  const [menuOpen, setMenuOpen] = useState(false); // Menü açma/kapama kontrolü
-  const [shopOpen, setShopOpen] = useState(false); // Shop menüsünü kontrol et
-  const menuRef = useRef(null); // Menü dışındaki tıklamaları kontrol etmek için ref
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [shopOpen, setShopOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const menuRef = useRef(null);
 
-  const handleShopClick = () => {
-    setShopOpen(!shopOpen); // Shop menüsünü açma/kapama
-  };
+  const dispatch = useDispatch();
+  const { categories, status } = useSelector((state) => state.categories);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { items } = useSelector((state) => state.cart);
+
+  const itemCount = items.reduce((total, item) => total + item.count, 0);
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchCategories());
+    }
+  }, [status, dispatch]);
+
+  // Group categories by gender
+  const categoriesByGender = categories.reduce((acc, category) => {
+    const gender = category.gender === 'k' ? 'Kadın' : 'Erkek';
+    if (!acc[gender]) {
+      acc[gender] = [];
+    }
+    acc[gender].push(category);
+    return acc;
+  }, {});
 
   const toggleMenu = () => {
-    setMenuOpen((prevMenuOpen) => !prevMenuOpen); // Menü açma/kapama
+    setMenuOpen((prevMenuOpen) => !prevMenuOpen);
   };
 
-  // Menü dışında bir yere tıklanıp tıklanmadığını kontrol etmek için useEffect
+  const handleShopIconClick = (e) => {
+    e.preventDefault();
+    setShopOpen((prevShopOpen) => !prevShopOpen);
+  };
+
+  const toggleCart = (e) => {
+    e.preventDefault();
+    setCartOpen(!cartOpen);
+  };
+
   useEffect(() => {
-    // Menü dışına tıklanıp tıklanmadığını kontrol et
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false); // Menü dışında bir yere tıklanırsa menüyü kapat
+        setMenuOpen(false);
+        setShopOpen(false);
       }
     };
 
-    // Dışarıya tıklama olayını dinle
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Temizleme işlemi
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   return (
-    <header className="shadow-md relative">
-      {/* Üst Kısım (Logo ve İkonlar) */}
+    <header className="shadow-md relative" ref={menuRef}>
       <div className="flex justify-between items-center bg-white p-4">
-        {/* Logo */}
         <div className="text-xl font-bold">Bandage</div>
 
-        {/* Masaüstü Menü */}
         <nav className="hidden md:flex gap-8 text-lg font-medium">
-          <a href="/" className="hover:text-blue-600">
+          <Link to="/" className="hover:text-blue-600">
             Home
-          </a>
+          </Link>
 
-          {/* Shop Menüsü */}
-          <div className="relative ">
-            <button
-              onClick={handleShopClick} // Shop tıklandığında menüyü aç/kapat
-              className="hover:text-blue-600"
-            >
-              Shop
-            </button>
-            {/* Shop alt menüsü */}
+          <div className="relative flex items-center gap-2">
+            <Link to="/shop" className="hover:text-blue-600">Shop</Link>
+
+            <ChevronDown
+              onClick={handleShopIconClick}
+              className="w-4 h-4 cursor-pointer hover:text-blue-600"
+            />
+
             {shopOpen && (
-              <div className="absolute left-0 top-10 bg-white border shadow-lg p-4 w-60 z-20">
-                <div className="flex space-x-12"> {/* Flex ile yan yana hizalama */}
-                  {/* Erkek Kategorisi */}
-                  <div className="flex flex-col space-y-4">
-                    <div className="font-medium">Erkek</div>
-                    <a href="#bags" className="text-sm text-gray-600 hover:text-blue-600">
-                      Bags
-                    </a>
-                    <a href="#belts" className="text-sm text-gray-600 hover:text-blue-600">
-                      Belts
-                    </a>
-                    <a href="#cosmetics" className="text-sm text-gray-600 hover:text-blue-600">
-                      Cosmetics
-                    </a>
-                    <a href="#bags" className="text-sm text-gray-600 hover:text-blue-600">
-                      Bags
-                    </a>
-                    <a href="#hats" className="text-sm text-gray-600 hover:text-blue-600">
-                      Hats
-                    </a>
+              <div className="absolute left-0 top-full mt-2 bg-white border shadow-lg p-6 w-96 z-20">
+                <div className="grid grid-cols-2 gap-x-12">
+                  {/* Kadın Kategorisi */}
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-lg">Kadın</h3>
+                    <div className="flex flex-col space-y-3">
+                      {categories
+                        .filter(cat => cat.gender === 'kadin')
+                        .map(category => (
+                          <Link
+                            key={category.id}
+                            to={`/shop/kadin/${category.title}/${category.id}`}
+                            className="text-gray-600 hover:text-blue-600 transition-colors duration-200"
+                          >
+                            {category.title}
+                          </Link>
+                        ))}
+                    </div>
                   </div>
 
-                  {/* Kadın Kategorisi */}
-                  <div className="flex flex-col space-y-4">
-                    <div className="font-medium">Kadın</div>
-                    <a href="#bags" className="text-sm text-gray-600 hover:text-blue-600">
-                      Bags
-                    </a>
-                    <a href="#belts" className="text-sm text-gray-600 hover:text-blue-600">
-                      Belts
-                    </a>
-                    <a href="#cosmetics" className="text-sm text-gray-600 hover:text-blue-600">
-                      Cosmetics
-                    </a>
-                    <a href="#bags" className="text-sm text-gray-600 hover:text-blue-600">
-                      Bags
-                    </a>
-                    <a href="#hats" className="text-sm text-gray-600 hover:text-blue-600">
-                      Hats
-                    </a>
+                  {/* Erkek Kategorisi */}
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-lg">Erkek</h3>
+                    <div className="flex flex-col space-y-3">
+                      {categories
+                        .filter(cat => cat.gender === 'erkek')
+                        .map(category => (
+                          <Link
+                            key={category.id}
+                            to={`/shop/erkek/${category.title}/${category.id}`}
+                            className="text-gray-600 hover:text-blue-600 transition-colors duration-200"
+                          >
+                            {category.title}
+                          </Link>
+                        ))}
+                    </div>
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-          <a href="#about" className="hover:text-blue-600">
+          <Link to="/about" className="hover:text-blue-600">
             About
-          </a>
-          <a href="#blog" className="hover:text-blue-600">
+          </Link>
+          <Link to="#blog" className="hover:text-blue-600">
             Blog
-          </a>
-          <a href="#contact" className="hover:text-blue-600">
+          </Link>
+          <Link to="/contact" className="hover:text-blue-600">
             Contact
-          </a>
+          </Link>
+          <Link to="/team" className="hover:text-blue-600">
+            Team
+          </Link>
         </nav>
 
-        {/* Sağdaki simgeler (Kullanıcı, Arama, Sepet) */}
         <div className="flex items-center gap-4">
-          <User className="w-5 h-5 cursor-pointer" />
-          <Link to="/login" className="text-blue-600 font-medium hover:underline">
-            Login
-          </Link>
-          <Link to="/signup" className="text-blue-600 font-medium hover:underline">
-           / Register
-          </Link>
+          {isAuthenticated ? (
+            <HeaderMenu />
+          ) : (
+            <>
+              <Link 
+                to="/login" 
+                className="text-gray-600 hover:text-gray-900"
+              >
+                Giriş Yap
+              </Link>
+              <Link 
+                to="/signup" 
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Kayıt Ol
+              </Link>
+            </>
+          )}
+
           <Search className="w-5 h-5 cursor-pointer" />
-          <ShoppingCart className="w-5 h-5 cursor-pointer" />
-          {/* Menü açma butonu */}
+          
+          <div className="relative">
+            <button 
+              onClick={toggleCart}
+              className="relative text-gray-600 hover:text-gray-900"
+            >
+              <ShoppingCart className="w-6 h-6" />
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
+            </button>
+
+            {cartOpen && <CartDropdown onClose={() => setCartOpen(false)} />}
+          </div>
+
           <button
-            onClick={toggleMenu} // Menü açma/kapama
+            onClick={toggleMenu}
             className="md:hidden"
           >
             {menuOpen ? (
-              <X className="w-5 h-5" /> // Menü açıkken X ikonu
+              <X className="w-5 h-5" />
             ) : (
-              <Menu className="w-5 h-5" /> // Menü kapalıyken Menü ikonu
+              <Menu className="w-5 h-5" />
             )}
           </button>
         </div>
       </div>
 
-      {/* Mobil Menü (Açılır/Kapanır Liste) */}
       {menuOpen && (
         <nav
-          ref={menuRef} // Menü dışı tıklamaları kontrol etmek için ref
+          ref={menuRef}
           className="absolute top-0 left-0 w-full bg-white flex flex-col items-center gap-4 py-6 shadow-md md:hidden z-50"
         >
-          <a href="#home" className="text-lg font-medium hover:text-blue-600">
+          <Link to="/" className="text-lg font-medium hover:text-blue-600">
             Home
-          </a>
-          <a href="#product" className="text-lg font-medium hover:text-blue-600">
-            Product
-          </a>
-          <a href="#pricing" className="text-lg font-medium hover:text-blue-600">
+          </Link>
+          <Link to="/shop" className="text-lg font-medium hover:text-blue-600">
+           Shop
+          </Link>
+          <Link to="#pricing" className="text-lg font-medium hover:text-blue-600">
             Pricing
-          </a>
-          <a href="#contact" className="text-lg font-medium hover:text-blue-600">
+          </Link>
+          <Link to="/contact" className="text-lg font-medium hover:text-blue-600">
             Contact
-          </a>
+          </Link>
         </nav>
       )}
     </header>
